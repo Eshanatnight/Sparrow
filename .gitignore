@@ -1,0 +1,11 @@
+# IDE and Text Editor Stuff
+/.idea
+/.vs
+
+# Build Files and Folders
+/out
+/bin
+/Build
+/build
+/cmake-build-debug
+/cmake-build-release
