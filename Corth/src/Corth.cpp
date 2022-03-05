@@ -56,7 +56,7 @@ bool Corth::isKeyword(std::string& word)
 
 std::string Corth::getKeywordStr(Keyword word)
 {
-    static_assert(static_cast<int>(Keyword::COUNT) == 28, "Exhaustive handling of keywords in GetKeywordStr");
+    static_assert(static_cast<int>(Keyword::COUNT) == 28, "Exhaustive handling of keywords in getKeywordStr Function");
 
     switch(word)
     {
@@ -93,7 +93,7 @@ std::string Corth::getKeywordStr(Keyword word)
         case Keyword::MOD:      { return "mod";      }
         default:
         {
-            Error("Unreachable in GetKeywordStr");
+            Error("Unreachable in getKeywordStr Function");
             exit(1);
             return "Error";
         }
@@ -103,7 +103,7 @@ std::string Corth::getKeywordStr(Keyword word)
 
 std::string Corth::TokenTypeStr(TokenType& t)
 {
-    static_assert(static_cast<int>(TokenType::COUNT) == 5, "Exhaustive handling of TokenType in TokenTypeStr");
+    static_assert(static_cast<int>(TokenType::COUNT) == 5, "Exhaustive handling of TokenType in TokenTypeStr Function");
 
     if(t == TokenType::WHITESPACE)
     {
@@ -130,7 +130,7 @@ std::string Corth::TokenTypeStr(TokenType& t)
         return "KEYWORD";
     }
 
-    Error("Unreachable in TokenTypeStr");
+    Error("Unreachable in TokenTypeStr Function");
     exit(1);
     return "Error";
 }
@@ -245,7 +245,7 @@ void Corth::generateAssembly_NASM_win64(Program& prog)
             std::vector<std::string> string_literals;
 
             // WRITE HEADER TO ASM FILE
-            asm_file << "    ;; CORTH COMPILER GENERATED THIS ASSEMBLY -- (BY LENSOR RADII)\n"
+            asm_file << "    ;; CORTH COMPILER GENERATED THIS ASSEMBLY\n"
                     << "    ;; USING `WINDOWS x64` CALLING CONVENTION (RCX, RDX, R8, R9, ETC)\n"
                     << "    SECTION .text\n"
                     << "    ;; DEFINE EXTERNAL C RUNTIME SYMBOLS (LINK AGAINST MSVCRT.DLL)\n"
@@ -424,51 +424,51 @@ void Corth::generateAssembly_NASM_win64(Program& prog)
                 else if (tok.type == TokenType::KEYWORD)
                 {
                     static_assert(static_cast<int>(Keyword::COUNT) == 28, "Exhaustive handling of keywords in GenerateAssembly_NASM_win64");
-                    if (tok.text == GetKeywordStr(Keyword::IF))
+                    if (tok.text == getKeywordStr(Keyword::IF))
                     {
                         asm_file << "    ;; -- if --\n"
                                 << "    pop rax\n"
                                 << "    cmp rax, 0\n"
                                 << "    je addr_" << tok.data << "\n";
                     }
-                    else if (tok.text == GetKeywordStr(Keyword::ELSE))
+                    else if (tok.text == getKeywordStr(Keyword::ELSE))
                     {
                         asm_file << "    ;; -- else --\n"
                                 << "    jmp addr_" << tok.data << "\n"
                                 << "addr_" << instr_ptr << ":\n";
                     }
-                    else if (tok.text == GetKeywordStr(Keyword::ENDIF))
+                    else if (tok.text == getKeywordStr(Keyword::ENDIF))
                     {
                         asm_file << "    ;; -- endif --\n"
                                 << "addr_" << instr_ptr << ":\n";
                     }
-                    else if (tok.text == GetKeywordStr(Keyword::WHILE))
+                    else if (tok.text == getKeywordStr(Keyword::WHILE))
                     {
                         asm_file << "    ;; -- while --\n"
                                 << "addr_" << instr_ptr << ":\n";
                     }
-                    else if (tok.text == GetKeywordStr(Keyword::DO))
+                    else if (tok.text == getKeywordStr(Keyword::DO))
                     {
                         asm_file << "    ;; -- do --\n"
                                 << "    pop rax\n"
                                 << "    cmp rax, 0\n"
                                 << "    je addr_" << tok.data << "\n";
                     }
-                    else if (tok.text == GetKeywordStr(Keyword::ENDWHILE))
+                    else if (tok.text == getKeywordStr(Keyword::ENDWHILE))
                     {
                         asm_file << "    ;; -- endwhile --\n"
                                 << "    jmp addr_" << tok.data << "\n"
                                 << "addr_" << instr_ptr << ":\n";
                     }
 
-					else if (tok.text == GetKeywordStr(Keyword::DUP))
+					else if (tok.text == getKeywordStr(Keyword::DUP))
                     {
                         asm_file << "    ;; -- dup --\n"
                                 << "    pop rax\n"
                                 << "    push rax\n"
                                 << "    push rax\n";
                     }
-                    else if (tok.text == GetKeywordStr(Keyword::TWODUP))
+                    else if (tok.text == getKeywordStr(Keyword::TWODUP))
                     {
                         asm_file << "    ;; -- twodup --\n"
                                 << "    pop rax\n"
@@ -478,12 +478,12 @@ void Corth::generateAssembly_NASM_win64(Program& prog)
                                 << "    push rbx\n"
                                 << "    push rax\n";
                     }
-                    else if (tok.text == GetKeywordStr(Keyword::DROP))
+                    else if (tok.text == getKeywordStr(Keyword::DROP))
                     {
                         asm_file << "    ;; -- drop --\n"
                                 << "    pop rax\n";
                     }
-                    else if (tok.text == GetKeywordStr(Keyword::SWAP))
+                    else if (tok.text == getKeywordStr(Keyword::SWAP))
                     {
                         asm_file << "    ;; -- swap --\n"
                                 << "    pop rax\n"
@@ -491,7 +491,7 @@ void Corth::generateAssembly_NASM_win64(Program& prog)
                                 << "    push rax\n"
                                 << "    push rbx\n";
                     }
-                    else if (tok.text == GetKeywordStr(Keyword::OVER))
+                    else if (tok.text == getKeywordStr(Keyword::OVER))
                     {
                         asm_file << "    ;; -- over --\n"
                                 << "    pop rax\n"
@@ -500,7 +500,7 @@ void Corth::generateAssembly_NASM_win64(Program& prog)
                                 << "    push rax\n"
                                 << "    push rbx\n";
                     }
-					else if (tok.text == GetKeywordStr(Keyword::DUMP))
+					else if (tok.text == getKeywordStr(Keyword::DUMP))
                     {
                         asm_file << "    ;; -- dump --\n"
                                 << "    lea rcx, [rel fmt]\n"
@@ -510,7 +510,7 @@ void Corth::generateAssembly_NASM_win64(Program& prog)
                                 << "    call printf\n"
                                 << "    add rsp, 32\n";
                     }
-                    else if (tok.text == GetKeywordStr(Keyword::DUMP_C))
+                    else if (tok.text == getKeywordStr(Keyword::DUMP_C))
                     {
                         asm_file << "    ;; -- dump --\n"
                                 << "    lea rcx, [rel fmt_char]\n"
@@ -520,7 +520,7 @@ void Corth::generateAssembly_NASM_win64(Program& prog)
                                 << "    call printf\n"
                                 << "    add rsp, 32\n";
                     }
-                    else if (tok.text == GetKeywordStr(Keyword::DUMP_S))
+                    else if (tok.text == getKeywordStr(Keyword::DUMP_S))
                     {
                         asm_file << "    ;; -- dump --\n"
                                 << "    lea rcx, [rel fmt_str]\n"
@@ -531,14 +531,14 @@ void Corth::generateAssembly_NASM_win64(Program& prog)
                                 << "    add rsp, 32\n";
                     }
 
-					else if (tok.text == GetKeywordStr(Keyword::MEM))
+					else if (tok.text == getKeywordStr(Keyword::MEM))
                     {
                         // Pushes the relative address of allocated memory onto the stack
                         asm_file << "    ;; -- mem --\n"
                                 << "    push mem\n";
 
                     }
-                    else if (tok.text == GetKeywordStr(Keyword::LOADB))
+                    else if (tok.text == getKeywordStr(Keyword::LOADB))
                     {
                         asm_file << "    ;; -- load byte --\n"
                                 << "    pop rax\n"
@@ -546,14 +546,14 @@ void Corth::generateAssembly_NASM_win64(Program& prog)
                                 << "    mov bl, [rax]\n"
                                 << "    push rbx\n";
                     }
-                    else if (tok.text == GetKeywordStr(Keyword::STOREB))
+                    else if (tok.text == getKeywordStr(Keyword::STOREB))
                     {
                         asm_file << "    ;; -- store byte --\n"
                                 << "    pop rbx\n"
                                 << "    pop rax\n"
                                 << "    mov [rax], bl\n";
                     }
-					else if (tok.text == GetKeywordStr(Keyword::LOADW))
+					else if (tok.text == getKeywordStr(Keyword::LOADW))
                     {
                         asm_file << "    ;; -- load word --\n"
                                 << "    pop rax\n"
@@ -561,14 +561,14 @@ void Corth::generateAssembly_NASM_win64(Program& prog)
                                 << "    mov bx, [rax]\n"
                                 << "    push rbx\n";
                     }
-                    else if (tok.text == GetKeywordStr(Keyword::STOREW))
+                    else if (tok.text == getKeywordStr(Keyword::STOREW))
                     {
                         asm_file << "    ;; -- store word --\n"
                                 << "    pop rbx\n"
                                 << "    pop rax\n"
                                 << "    mov [rax], bx\n";
                     }
-					else if (tok.text == GetKeywordStr(Keyword::LOADD))
+					else if (tok.text == getKeywordStr(Keyword::LOADD))
 
                     {
                         asm_file << "    ;; -- load double word --\n"
@@ -577,14 +577,14 @@ void Corth::generateAssembly_NASM_win64(Program& prog)
                                 << "    mov ebx, [rax]\n"
                                 << "    push rbx\n";
                     }
-                    else if (tok.text == GetKeywordStr(Keyword::STORED))
+                    else if (tok.text == getKeywordStr(Keyword::STORED))
                     {
                         asm_file << "    ;; -- store double word --\n"
                                 << "    pop rbx\n"
                                 << "    pop rax\n"
                                 << "    mov [rax], ebx\n";
                     }
-					else if (tok.text == GetKeywordStr(Keyword::LOADQ))
+					else if (tok.text == getKeywordStr(Keyword::LOADQ))
                     {
                         asm_file << "    ;; -- load quad word --\n"
                                 << "    pop rax\n"
@@ -592,7 +592,7 @@ void Corth::generateAssembly_NASM_win64(Program& prog)
                                 << "    mov rbx, [rax]\n"
                                 << "    push rbx\n";
                     }
-                    else if (tok.text == GetKeywordStr(Keyword::STOREQ))
+                    else if (tok.text == getKeywordStr(Keyword::STOREQ))
                     {
                         asm_file << "    ;; -- store quad word --\n"
                                 << "    pop rbx\n"
@@ -600,7 +600,7 @@ void Corth::generateAssembly_NASM_win64(Program& prog)
                                 << "    mov [rax], rbx\n";
                     }
 
-                    else if (tok.text == GetKeywordStr(Keyword::SHL))
+                    else if (tok.text == getKeywordStr(Keyword::SHL))
                     {
                         asm_file << "    ;; -- bitwise-shift left --\n"
                                 << "    pop rcx\n"
@@ -608,7 +608,7 @@ void Corth::generateAssembly_NASM_win64(Program& prog)
                                 << "    shl rbx, cl\n"
                                 << "    push rbx";
                     }
-                    else if (tok.text == GetKeywordStr(Keyword::SHR))
+                    else if (tok.text == getKeywordStr(Keyword::SHR))
                     {
                         asm_file << "    ;; -- bitwise-shift right --\n"
                                 << "    pop rcx\n"
@@ -616,7 +616,7 @@ void Corth::generateAssembly_NASM_win64(Program& prog)
                                 << "    shr rbx, cl\n"
                                 << "    push rbx";
                     }
-                    else if (tok.text == GetKeywordStr(Keyword::OR))
+                    else if (tok.text == getKeywordStr(Keyword::OR))
                     {
                         asm_file << "    ;; -- bitwise or --\n"
                                 << "    pop rax\n"
@@ -624,7 +624,7 @@ void Corth::generateAssembly_NASM_win64(Program& prog)
                                 << "    or rax, rbx\n"
                                 << "    push rax\n";
                     }
-                    else if (tok.text == GetKeywordStr(Keyword::AND))
+                    else if (tok.text == getKeywordStr(Keyword::AND))
                     {
                         asm_file << "    ;; -- bitwise and --\n"
                                 << "    pop rax\n"
@@ -632,7 +632,7 @@ void Corth::generateAssembly_NASM_win64(Program& prog)
                                 << "    and rax, rbx\n"
                                 << "    push rax\n";
                     }
-					else if (tok.text == GetKeywordStr(Keyword::MOD))
+					else if (tok.text == getKeywordStr(Keyword::MOD))
                     {
                         asm_file << "    ;; -- modulo --\n"
                                 << "    xor rdx, rdx\n"
@@ -685,4 +685,639 @@ void Corth::generateAssembly_NASM_win64(Program& prog)
             Error("Could not open file for writing. Does directory exist?");
             exit(1);
         }
+}
+
+// Generates GAS assembly file
+// Note: I have not used GAS to test this but to my knowledge it should work
+// If the person reading this is interested in using GAS, feel free to implement
+// and submit a pull request.
+void Corth::generateAssembly_GAS_win64(Program &prog)
+{
+    std::string asm_file_path = OUTPUT_NAME + ".s";
+    std::fstream asm_file;
+    // I know the constructor can be used to directly open a file for writing
+    // this is just a thing i do to make it easier to read
+    asm_file.open(asm_file_path.c_str(), std::ios::out);
+    if (asm_file)
+    {
+        Log("Generating WIN64 GAS assembly");
+
+        // Save list of defined strings in file to write at the end of the assembly in the `.data` section.
+        std::vector<std::string> string_literals;
+
+        // WRITE HEADER TO ASM FILE
+        asm_file << "    # CORTH COMPILER GENERATED THIS ASSEMBLY\n"
+                << "    # USING `GAS` SYNTAX\n"
+                << "    # USING `WINDOWS X64` CALLING CONVENTION (RCX, RDX, R8, R9, -> STACK)\n"
+                << "    .text\n"
+                << "    .globl main\n"
+                << "main:\n";
+
+        // WRITE TOKENS TO ASM FILE MAIN LABEL
+        static_assert(static_cast<int>(TokenType::COUNT) == 5, "Exhaustive handling of token types in GenerateAssembly_GAS_win64");
+        size_t instr_ptr = 0;
+        size_t instr_ptr_max = prog.tokens.size();
+
+        while (instr_ptr < instr_ptr_max)
+        {
+            Token& tok = prog.tokens[instr_ptr];
+
+            // Write assembly to opened file based on token type and value
+            if (tok.type == TokenType::INT)
+            {
+                asm_file << "    # -- push INT --\n"
+                        << "    mov $"  << tok.text << ", %rax" << "\n"
+                        << "    push %rax\n";
+            }
+            else if (tok.type == TokenType::STRING)
+            {
+                asm_file << "    # -- push STRING --\n"
+                        << "    lea str_" << string_literals.size() << "(%rip), %rax\n"
+                        << "    push %rax\n";
+
+                // String value is stored in tok.text
+                string_literals.push_back(tok.text);
+            }
+            else if (tok.type == TokenType::OP)
+            {
+                static_assert(OP_COUNT == 15, "Exhaustive handling of operators in GenerateAssembly_GAS_win64");
+                if (tok.text == "+")
+                {
+                    asm_file << "    # -- add --\n"
+                            << "    pop %rax\n"
+                            << "    pop %rbx\n"
+                            << "    add %rbx, %rax\n"
+                            << "    push %rax\n";
+                }
+                else if (tok.text == "-")
+                {
+                    asm_file << "    # -- subtract --\n"
+                            << "    pop %rbx\n"
+                            << "    pop %rax\n"
+                            << "    sub %rbx, %rax\n"
+                            << "    push %rax\n";
+                }
+                else if (tok.text == "*")
+                {
+                    asm_file << "    # -- multiply --\n"
+                            << "    pop %rax\n"
+                            << "    pop %rbx\n"
+                            << "    mul %rbx\n"
+                            << "    push %rax\n";
+                }
+                else if (tok.text == "/")
+                {
+                    asm_file << "    # -- divide --\n"
+                            << "    xor %rdx, %rdx\n"
+                            << "    pop %rbx\n"
+                            << "    pop %rax\n"
+                            << "    div %rbx\n"
+                            << "    push %rax\n";
+                }
+                else if (tok.text == "%")
+                {
+                        asm_file << "    # -- modulo --\n"
+                            << "    xor %rdx, %rdx\n"
+                            << "    pop %rbx\n"
+                            << "    pop %rax\n"
+                            << "    div %rbx\n"
+                            << "    push %rdx\n";
+                }
+                else if (tok.text == "=")
+                {
+                    asm_file << "    # -- equality condition --\n"
+                            << "    mov $0, %rcx\n"
+                            << "    mov $1, %rdx\n"
+                            << "    pop %rax\n"
+                            << "    pop %rbx\n"
+                            << "    cmp %rbx, %rax\n"
+                            << "    cmove %rdx, %rcx\n"
+                            << "    push %rcx\n";
+                }
+                else if (tok.text == "<")
+                {
+                    asm_file << "    # -- less than condition --\n"
+                            << "    mov $0, %rcx\n"
+                            << "    mov $1, %rdx\n"
+                            << "    pop %rbx\n"
+                            << "    pop %rax\n"
+                            << "    cmp %rbx, %rax\n"
+                            << "    cmovl %rdx, %rcx\n"
+                            << "    push %rcx\n";
+                }
+                else if (tok.text == ">")
+                {
+                    asm_file << "    # -- greater than condition --\n"
+                        << "    mov $0, %rcx\n"
+                        << "    mov $1, %rdx\n"
+                        << "    pop %rbx\n"
+                        << "    pop %rax\n"
+                        << "    cmp %rbx, %rax\n"
+                        << "    cmovg %rdx, %rcx\n"
+                        << "    push %rcx\n";
+                }
+                else if (tok.text == "<=")
+                {
+                    asm_file << "    # -- less than or equal condition --\n"
+                            << "    mov $0, %rcx\n"
+                            << "    mov $1, %rdx\n"
+                            << "    pop %rbx\n"
+                            << "    pop %rax\n"
+                            << "    cmp %rbx, %rax\n"
+                            << "    cmovle %rdx, %rcx\n"
+                            << "    push %rcx\n";
+                }
+                else if (tok.text == ">=")
+                {
+                    asm_file << "    # -- greater than or equal condition --\n"
+                            << "    mov $0, %rcx\n"
+                            << "    mov $1, %rdx\n"
+                            << "    pop %rbx\n"
+                            << "    pop %rax\n"
+                            << "    cmp %rbx, %rax\n"
+                            << "    cmovge %rdx, %rcx\n"
+                            << "    push %rcx\n";
+                }
+                else if (tok.text == "<<")
+                {
+                    asm_file << "    # -- bitwise-shift left --\n"
+                    << "    pop %rcx\n"
+                    << "    pop %rbx\n"
+                    << "    shl %cl, %rbx\n"
+                    << "    push %rbx";
+                }
+                else if (tok.text == ">>")
+                {
+                    asm_file << "    # -- bitwise-shift right --\n"
+                            << "    pop %rcx\n"
+                            << "    pop %rbx\n"
+                            << "    shr %cl, %rbx\n"
+                            << "    push %rbx";
+                }
+                else if (tok.text == "||")
+                {
+                    asm_file << "    # -- bitwise or --\n"
+                            << "    pop %rax\n"
+                            << "    pop %rbx\n"
+                            << "    or %rbx, %rax\n"
+                            << "    push %rax\n";
+                }
+                else if (tok.text == "&&")
+                {
+                    asm_file << "    # -- bitwise and --\n"
+                            << "    pop %rax\n"
+                            << "    pop %rbx\n"
+                            << "    and %rbx, %rax\n"
+                            << "    push %rax\n";
+                }
+                else if (tok.text == "#")
+                {
+                    asm_file << "    # -- dump --\n"
+                            << "    lea fmt(%rip), %rcx\n"
+                            << "    pop %rdx\n"
+                            << "    xor %rax, %rax\n"
+                            << "    sub $32, %rsp\n"
+                            << "    call printf\n"
+                            << "    add $32, %rsp\n";
+                }
+            }
+            else if (tok.type == TokenType::KEYWORD)
+            {
+                static_assert(static_cast<int>(Keyword::COUNT) == 28, "Exhaustive handling of token types in GenerateAssembly_GAS_win64");
+                if (tok.text == getKeywordStr(Keyword::IF))
+                {
+                    asm_file << "    # -- if --\n"
+                            << "    pop %rax\n"
+                            << "    cmp $0, %rax\n"
+                            << "    je addr_" << tok.data << "\n";
+                }
+                else if (tok.text == getKeywordStr(Keyword::ELSE))
+                {
+                    asm_file << "    # -- else --\n"
+                            << "    jmp addr_" << tok.data << "\n"
+                            << "addr_" << instr_ptr << ":\n";
+                }
+                else if (tok.text == getKeywordStr(Keyword::ENDIF))
+                {
+                    asm_file << "    # -- endif --\n"
+                            << "addr_" << instr_ptr << ":\n";
+                }
+                else if (tok.text == getKeywordStr(Keyword::WHILE))
+                {
+                    asm_file << "    # -- while --\n"
+                            << "addr_" << instr_ptr << ":\n";
+                }
+                else if (tok.text == getKeywordStr(Keyword::DO))
+                {
+                    asm_file << "    # -- do --\n"
+                            << "    pop %rax\n"
+                            << "    cmp $0, %rax\n"
+                            << "    je addr_" << tok.data << "\n";
+                }
+                else if (tok.text == getKeywordStr(Keyword::ENDWHILE))
+                {
+                    asm_file << "    # -- endwhile --\n"
+                            << "    jmp addr_" << tok.data << "\n"
+                            << "addr_" << instr_ptr << ":\n";
+                }
+
+                else if (tok.text == getKeywordStr(Keyword::DUP))
+                {
+                    asm_file << "    # -- dup --\n"
+                            << "    pop %rax\n"
+                            << "    push %rax\n"
+                            << "    push %rax\n";
+                }
+                else if (tok.text == getKeywordStr(Keyword::TWODUP))
+                {
+                    asm_file << "    # -- twodup --\n"
+                            << "    pop %rax\n"
+                            << "    pop %rbx\n"
+                            << "    push %rbx\n"
+                            << "    push %rax\n"
+                            << "    push %rbx\n"
+                            << "    push %rax\n";
+                }
+                else if (tok.text == getKeywordStr(Keyword::DROP))
+                {
+                    asm_file << "    # -- drop --\n"
+                            << "    pop %rax\n";
+                }
+                else if (tok.text == getKeywordStr(Keyword::SWAP))
+                {
+                    asm_file << "    # -- swap --\n"
+                            << "    pop %rax\n"
+                            << "    pop %rbx\n"
+                            << "    push %rax\n"
+                            << "    push %rbx\n";
+                }
+                else if (tok.text == getKeywordStr(Keyword::OVER))
+                {
+                    asm_file << "    # -- over --\n"
+                        << "    pop %rax\n"
+                        << "    pop %rbx\n"
+                        << "    push %rbx\n"
+                        << "    push %rax\n"
+                        << "    push %rbx\n";
+                }
+                else if (tok.text == getKeywordStr(Keyword::DUMP))
+                {
+                    asm_file << "    # -- dump --\n"
+                            << "    lea fmt(%rip), %rcx\n"
+                            << "    pop %rdx\n"
+                            << "    xor %rax, %rax\n"
+                            << "    sub $32, %rsp\n"
+                            << "    call printf\n"
+                            << "    add $32, %rsp\n";
+                }
+                else if (tok.text == getKeywordStr(Keyword::DUMP_C))
+                {
+                    asm_file << "    # -- dump character --\n"
+                            << "    lea fmt_char(%rip), %rcx\n"
+                            << "    pop %rdx\n"
+                            << "    xor %rax, %rax\n"
+                            << "    sub $32, %rsp\n"
+                            << "    call printf\n"
+                            << "    add $32, %rsp\n";
+                }
+                else if (tok.text == getKeywordStr(Keyword::DUMP_S))
+                {
+                    asm_file << "    # -- dump string --\n"
+                            << "    lea fmt_str(%rip), %rcx\n"
+                            << "    pop %rdx\n"
+                            << "    xor %rax, %rax\n"
+                            << "    sub $32, %rsp\n"
+                            << "    call printf\n"
+                            << "    add $32, %rsp\n";
+                }
+
+                else if (tok.text == getKeywordStr(Keyword::MEM))
+                {
+                    // Pushes the relative address of allocated memory onto the stack
+                    asm_file << "    # -- mem --\n"
+                            << "    lea mem(%rip), %rax\n"
+                            << "    push %rax\n";
+                }
+                else if (tok.text == getKeywordStr(Keyword::LOADB))
+                {
+                    asm_file << "    # -- load byte --\n"
+                            << "    pop %rax\n"
+                            << "    xor %rbx, %rbx\n"
+                            << "    mov (%rax), %bl\n"
+                            << "    push %rbx\n";
+                }
+                else if (tok.text == getKeywordStr(Keyword::STOREB))
+                {
+                    asm_file << "    # -- store byte --\n"
+                            << "    pop %rbx\n"
+                            << "    pop %rax\n"
+                            << "    mov %bl, (%rax)\n";
+                }
+                else if (tok.text == getKeywordStr(Keyword::LOADW))
+                {
+                    asm_file << "    # -- load word --\n"
+                            << "    pop %rax\n"
+                            << "    xor %rbx, %rbx\n"
+                            << "    mov (%rax), %bx\n"
+                            << "    push %rbx\n";
+                }
+                else if (tok.text == getKeywordStr(Keyword::STOREW))
+                {
+                    asm_file << "    # -- store word --\n"
+                            << "    pop %rbx\n"
+                            << "    pop %rax\n"
+                            << "    mov %bx, (%rax)\n";
+                }
+                else if (tok.text == getKeywordStr(Keyword::LOADD))
+                {
+                    asm_file << "    # -- load double word --\n"
+                            << "    pop %rax\n"
+                            << "    xor %rbx, %rbx\n"
+                            << "    mov (%rax), %ebx\n"
+                            << "    push %rbx\n";
+                }
+                else if (tok.text == getKeywordStr(Keyword::STORED))
+                {
+                    asm_file << "    # -- store double word --\n"
+                            << "    pop %rbx\n"
+                            << "    pop %rax\n"
+                            << "    mov %ebx, (%rax)\n";
+                }
+                else if (tok.text == getKeywordStr(Keyword::LOADQ))
+                {
+                    asm_file << "    # -- load quad word --\n"
+                            << "    pop %rax\n"
+                            << "    xor %rbx, %rbx\n"
+                            << "    mov (%rax), %rbx\n"
+                            << "    push %rbx\n";
+                }
+                else if (tok.text == getKeywordStr(Keyword::STOREQ))
+                {
+                    asm_file << "    # -- store quad word --\n"
+                            << "    pop %rbx\n"
+                            << "    pop %rax\n"
+                            << "    mov %rbx, (%rax)\n";
+                }
+
+                else if (tok.text == getKeywordStr(Keyword::SHL))
+                {
+                    asm_file << "    # -- bitwise-shift left --\n"
+                            << "    pop %rcx\n"
+                            << "    pop %rbx\n"
+                            << "    shl %cl, %rbx\n"
+                            << "    push %rbx";
+                }
+                else if (tok.text == getKeywordStr(Keyword::SHR))
+                {
+                    asm_file << "    # -- bitwise-shift right --\n"
+                            << "    pop %rcx\n"
+                            << "    pop %rbx\n"
+                            << "    shr %cl %rbx\n"
+                            << "    push %rbx";
+                }
+                else if (tok.text == getKeywordStr(Keyword::OR))
+                {
+                    asm_file << "    # -- bitwise or --\n"
+                            << "    pop %rax\n"
+                            << "    pop %rbx\n"
+                            << "    or %rbx, %rax\n"
+                            << "    push %rax\n";
+                }
+                else if (tok.text == getKeywordStr(Keyword::AND))
+                {
+                    asm_file << "    # -- bitwise and --\n"
+                            << "    pop %rax\n"
+                            << "    pop %rbx\n"
+                            << "    and %rbx, %rax\n"
+                            << "    push %rax\n";
+                }
+                else if (tok.text == getKeywordStr(Keyword::MOD))
+                {
+                    asm_file << "    # -- modulo --\n"
+                            << "    xor %rdx, %rdx\n"
+                            << "    pop %rbx\n"
+                            << "    pop %rax\n"
+                            << "    div %rbx\n"
+                            << "    push %rdx\n";
+                }
+            }
+            instr_ptr++;
+        }
+
+        // WRITE ASM FOOTER (GRACEFUL PROGRAM EXIT, CONSTANTS)
+        asm_file << "    mov $0, %rcx\n"
+                << "    call exit\n"
+                << '\n'
+                << "    .data\n"
+                << "    fmt: .string \"%u\"\n"
+                << "    fmt_char: .string \"%c\"\n"
+                << "    fmt_str: .string \"%s\"\n";
+
+        // WRITE USER DEFINED STRINGS
+        size_t index = 0;
+        if (string_literals.size() > 0)
+        {
+            asm_file << "\n    # USER DEFINED STRINGS\n";
+        }
+
+        for (auto& string : string_literals)
+        {
+            asm_file << "str_" << index << ": .string \"" << string << "\"\n";
+            index++;
+        }
+
+        // ALLOCATE MEMORY
+        asm_file << '\n'
+        << "    .bss\n"
+        << "    .comm mem, " << MEM_CAPACITY << '\n';
+
+        // Close open filestream.
+        asm_file.close();
+
+        Log("WIN64 GAS assembly generated at " + asm_file_path);
+    }
+
+    else
+    {
+        Error("Could not open file for writing. Does directory exist?");
+        exit(1);
+    }
+
+}
+
+
+bool Corth::handleCommandLineArgs(int argc, char **argv)
+{
+    static_assert(static_cast<int>(MODE::COUNT) == 2, "Exhaustive handling of supported modes in handleCMDLineArgs function");
+    static_assert(static_cast<int>(PLATFORM::COUNT) ==1 , "Exhaustive handling of supported platforms in handleCMDLineArgs function");
+    static_assert(static_cast<int>(ASM_SYNTAX::COUNT) == 2, "Exhaustive handling of supported assembly syntaxes in handleCMDLineArgs function");
+
+    // No command line arguments were passed.
+    if(argc == 1)
+    {
+        printUseage();
+        return false;
+    }
+
+    for(int i = 1; i < argc; ++i)
+    {
+        std::string arg = argv[i];
+
+        if (arg == "-v" || arg == "--verbose")
+        {
+            Log("Verbose mode enabled.");
+            verboseLogging = true;
+        }
+
+        else if(arg == "-o" || arg == "--output-name")
+        {
+            if(i + 1 < argc)
+            {
+                ++i;
+                OUTPUT_NAME= argv[i];
+            }
+
+            else
+            {
+                Error("Expected name of output file to be specified after `-o`!");
+                return false;
+            }
+        }
+
+        else if (arg == "-a" || arg == "--assembler-path")
+        {
+            if (i + 1 < argc)
+            {
+                ++i;
+                ASMB_PATH = argv[i];
+            }
+            else 
+            {
+                Error("Expected path to assembler to be specified after `-a`!");
+                return false;
+            }
+        }
+        
+        else if (arg == "-ao" || arg == "--assembler-options")
+        {
+            if (i + 1 < argc)
+            {
+                i++;
+                ASMB_OPTS = argv[i];
+            }
+            else
+            {
+                Error("Expected assembler options to be specified after `-ao`!");
+                return false;
+            }
+        }
+
+        else if (arg == "-l" || arg == "--linker-path")
+        {
+            if (i + 1 < argc)
+            {
+                i++;
+                LINK_PATH = argv[i];
+            }
+            else
+            {
+                Error("Expected path to linker to be specified after `-l`!");
+                return false;
+            }
+        }
+
+        else if (arg == "-lo" || arg == "--linker-options")
+        {
+            if (i + 1 < argc)
+            {
+                i++;
+                LINK_OPTS = argv[i];
+            }
+            else
+            {
+                Error("Expected linker options to be specified after `-lo`!");
+                return false;
+            }
+        }
+
+        else if (arg == "-add-ao" || arg == "--add-asm-opt")
+        {
+            if (i + 1 < argc)
+            {
+                i++;
+                ASMB_OPTS.append(1, ' ');
+                ASMB_OPTS += argv[i];
+            }
+            else
+            {
+                Error("Expected an assembler command line option to be specified after `-add-ao`!");
+                return false;
+            }
+        }
+
+        else if (arg == "-add-lo" || arg == "--add-link-opt")
+        {
+            if (i + 1 < argc)
+            {
+                i++;
+                LINK_OPTS.append(1, ' ');
+                LINK_OPTS += argv[i];
+            }
+            else
+            {
+                Error("Expected a linker command line option to be specified after `-add-lo`!");
+                return false;
+            }
+        }
+
+        // To be used if other platforms are ever supported
+        else if (arg == "-win" || arg == "-win64" )
+        {
+            RUN_PLATFORM = PLATFORM::WIN64;
+        }
+
+        #ifdef  LIN_SUPPORT
+        else if (arg == "--linux" || arg == "--linux64")
+        {
+            RUN_PLATFORM = PLATFORM::LINUX;
+        }
+        #endif
+
+        else if (arg == "-win32" || arg == "-m32" || arg == "-Wa,--32")
+        {
+            Error("32-bit mode is not supported!");
+            return false;
+        }
+
+        #ifdef LIN_SUPPORT
+        else if(arg == "-linux32")
+        {
+            Error("32-bit mode is not supported!");
+            return false;
+        }
+        #endif
+
+        else if (arg == "-com" || arg == "--compile")
+        {
+            RUN_MODE = MODE::COMPILE;
+        }
+
+        else if (arg == "-gen" || arg == "--generate")
+        {
+            RUN_MODE = MODE::GENERATE;
+        }
+
+        else if(arg == "-NASM")
+        {
+            ASSEMBLY_SYNTAX = ASM_SYNTAX::NASM;
+
+            // SET PLATFORM SPECIFIC DEFAULTS
+            // Defaults assume tools were installed on the default drive as in the installer.
+            Corth::ASMB_PATH = "C:\\Program Files\\NASM\\nasm.exe";
+            Corth::ASMB_OPTS = "-f win64";
+            // Get Golink in the system
+            // Corth::LINK_PATH = "\\Golink\\golink.exe";
+            // Corth::LINK_OPTS = "/console /ENTRY:main msvcrt.dll";
+        }
+    }
 }

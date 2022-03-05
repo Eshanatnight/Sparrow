@@ -9,8 +9,8 @@ namespace Corth
     std::string OUTPUT_NAME = "main_corth";
     std::string ASMB_PATH = "";
     std::string LINK_PATH = "";
-    std::string ASMB_OPT = "";
-    std::string LINK_OPT = "";
+    std::string ASMB_OPTS = "";
+    std::string LINK_OPTS = "";
     std::string ASMB_NAME = "";
     std::string LINK_NAME = "";
 
@@ -25,12 +25,11 @@ namespace Corth
 
     enum class PLATFORM
     {
-        WIN,
-        LINUX,
+        WIN64,
         COUNT
     };
 
-    PLATFORM RUN_PLATFORM = PLATFORM::WIN;
+    PLATFORM RUN_PLATFORM = PLATFORM::WIN64;
 
     enum class ASM_SYNTAX
     {
@@ -39,14 +38,21 @@ namespace Corth
         COUNT
     };
 
+    //I have not tried this with GAS Assembler yet. So there might be some bugs.
+    // For the GAS Syntax. Look Corth.cpp Line: 694
     ASM_SYNTAX ASSEMBLY_SYNTAX = ASM_SYNTAX::NASM;
 
     bool verboseLogging = false;
 
     // Operators
+    // Number of Operators
     const std::size_t OP_COUNT = 15;
+
+    // Checks if the given symbol is an operator or not.
+    // if it is an operator then sets the Correct Enum value.
     bool isOperator(char& c);
 
+    // Enum Class For the Keywords that are currently supported.
     enum class Keyword
     {
         IF,
@@ -80,6 +86,7 @@ namespace Corth
         COUNT
     };
 
+    // Checks if the given symbol is a keyword or not.
     bool isKeyword(std::string& word);
 
     // This function outlines the corth source input and the output it will generate.
@@ -121,6 +128,15 @@ namespace Corth
     // NASM doesn't deal with strings well, so I construct hex by hand to ensure behaviour is expected.
     std::vector<std::string> stringToHex(const std::string& str);
 
-    // Generating the ASM code
+    // Generating the ASM code for NASM ASSEMBLER
     void generateAssembly_NASM_win64(Program& program);
+
+    // Generating the ASM code for GAS ASSEMBLER
+    void generateAssembly_GAS_win64(Program& program);
+
+    // Handle the command line arguments that are passed to the program.
+    // Return value:
+    // False = Execution will halt in main function
+    // True = Execution will continue in main function
+    bool handleCommandLineArgs(int argc, char** argv);
 }
