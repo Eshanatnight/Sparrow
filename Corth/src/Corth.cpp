@@ -1149,7 +1149,7 @@ void Corth::generateAssembly_GAS_win64(Program &prog)
 bool Corth::handleCommandLineArgs(int argc, char **argv)
 {
     static_assert(static_cast<int>(MODE::COUNT) == 2, "Exhaustive handling of supported modes in handleCMDLineArgs function");
-    static_assert(static_cast<int>(PLATFORM::COUNT) ==1 , "Exhaustive handling of supported platforms in handleCMDLineArgs function");
+    static_assert(static_cast<int>(PLATFORM::COUNT) == 0 , "Exhaustive handling of supported platforms in handleCMDLineArgs function");
     static_assert(static_cast<int>(ASM_SYNTAX::COUNT) == 2, "Exhaustive handling of supported assembly syntaxes in handleCMDLineArgs function");
 
     // No command line arguments were passed.
@@ -1273,7 +1273,7 @@ bool Corth::handleCommandLineArgs(int argc, char **argv)
         // To be used if other platforms are ever supported
         else if (arg == "-win" || arg == "-win64" )
         {
-            RUN_PLATFORM = PLATFORM::WIN64;
+            RUN_PLATFORM = PLATFORM::WIN;
         }
 
         #ifdef  LIN_SUPPORT
@@ -1316,8 +1316,306 @@ bool Corth::handleCommandLineArgs(int argc, char **argv)
             Corth::ASMB_PATH = "C:\\Program Files\\NASM\\nasm.exe";
             Corth::ASMB_OPTS = "-f win64";
             // Get Golink in the system
-            // Corth::LINK_PATH = "\\Golink\\golink.exe";
-            // Corth::LINK_OPTS = "/console /ENTRY:main msvcrt.dll";
+             Corth::LINK_PATH = "\\Golink\\golink.exe";
+             Corth::LINK_OPTS = "/console /ENTRY:main msvcrt.dll";
+        }
+
+        else if (arg == "-GAS")
+        {
+            ASSEMBLY_SYNTAX = ASM_SYNTAX::GAS;
+            #ifdef _WIN64
+            // Defaults assume tools were installed on the same drive as Corth as well as in the root directory of the drive.
+            // TODO: Might need TDM-GCC to be installed
+            Corth::ASMB_PATH = "\\TDM-GCC-64\\bin\\gcc.exe";
+            Corth::ASMB_OPTS = "-e main";
+            Corth::LINK_PATH = "";
+            Corth::LINK_OPTS = "";
+            #endif
+
+            #ifdef LIN_SUPPORT
+            Corth::ASMB_PATH = "gcc";
+            Corth::ASMB_OPTS = "-e main";
+            Corth::LINK_PATH = "";
+            Corth::LINK_OPTS = "";
+            #endif
+        }
+
+        else
+        {
+            SOURCE_PATH = arg[i];
         }
     }
+
+    if(SOURCE_PATH.empty())
+    {
+        Error("No source file specified!");
+        return false;
+    }
+
+    return true;
 }
+
+
+bool Corth::isWhiteSpace(char& c)
+{
+    // Basically checks if the character is a space, tab, newline or crlf
+    return c == ' ' || c == '\t' || c == '\n' || c == '\r';
+}
+
+void Corth::pushToken(std::vector<Token> &tokList, Token &tok)
+{
+    // Add token to program if it is not whitespace
+    if(tok.type != TokenType::WHITESPACE)
+    {
+        tokList.push_back(tok);
+    }
+
+    // or else reset token
+    tok.type = TokenType::WHITESPACE;
+    tok.text.erase();
+}
+
+// LEXER
+bool Corth::lex(Program &program)
+{
+    std::string src = program.source;
+    size_t src_end = src.length();
+
+    static_assert(static_cast<int>(TokenType::COUNT) == 5, "Exhaustive Handling of TokenType in Lex Method");
+
+    std::vector<Token>& toks = program.tokens;
+    Token tok;
+    char current = src[0];
+
+    for(int i =0; i < src_end ++i)
+    {
+        current = src[i];
+        tok.col_number++;
+
+        // Skipping whitespace
+        if(isWhiteSpace(current))
+        {
+            if(current == '\n')
+            {
+                tok.line_number++;
+                tok.col_number = 1;
+            }
+        }
+
+        else if(isOperator(current))
+        {
+            static_assert(OP_COUNT == 15, "Exhaustive Handling of Operators in Lex Method");
+            tok.type = TokenType::OP;
+            tok.text.append(1, current);
+
+            // Look-ahead to check for multi-character operators
+            i++;
+            current = src[i];
+            if ((tok.text == "=" && current == '=')
+                || (tok.text == "<" && current == '=')
+                || (tok.text == ">" && current == '=')
+                || (tok.text == "<" && current == '<')
+                || (tok.text == ">" && current == '>'))
+            {
+                tok.text.append(1, current);
+            }
+            else if (tok.text == "|")
+            {
+                if (current == '|')
+                {
+                    tok.text.append(1, current);
+                }
+
+                else
+                {
+                    Warning("Expected '|' after '|' ", tok.line_number, tok.col_number);
+                }
+            }
+
+            else if (tok.text == "&")
+            {
+                if (current == '&')
+                {
+                    tok.text.append(1, current);
+                }
+                else
+                {
+                    Warning("Expected '&' following '&'", tok.line_number, tok.col_number);
+                    tok.text.append(1, '&'); // Create missing text so it will still work
+                }
+            }
+
+            else if (tok.text == "/" && current == '/')
+            {
+                // This is a comment until new-line or end of file
+                tok.type = TokenType::WHITESPACE;
+                while (i < src_end)
+                {
+                    i++;
+                    current = src[i];
+                    tok.col_number++;
+                    if (current == '\n')
+                    {
+                        tok.line_number++;
+                        tok.col_number = 1;
+                        break;
+                    }
+                }
+            }
+            PushToken(toks, tok);
+        }
+        else if (isdigit(current))
+        {
+            tok.type = TokenType::INT;
+            tok.text.append(1, current);
+            // Handle multi-digit numbers
+            while (i < src_end)
+            {
+                // Look ahead for digit
+                i++;
+                current = src[i];
+                tok.col_number++;
+                if (isdigit(current))
+                {
+                    tok.text.append(1, current);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            i--; // Undo lookahead.
+            PushToken(toks, tok);
+        }
+        else if (isalpha(current))
+        {
+            tok.text.append(1, current);
+
+            // Handle multiple-alpha keywords
+            while (i < src_end)
+            {
+                // Look ahead for alpha
+                i++;
+                current = src[i];
+                tok.col_number++;
+                if (isalpha(current) || current == '_')
+                {
+                    tok.text.append(1, current);
+                }
+
+                else
+                {
+                    break;
+                }
+            }
+            // If the token is not a keyword, output a warning and keep this token's type as whitespace
+            // (effectively ensuring it will be removed)
+            if (isKeyword(tok.text))
+            {
+                tok.type = TokenType::KEYWORD;
+            }
+            else {
+                Error("Unidentified keyword: " + tok.text, tok.line_number, tok.col_number);
+                return false;
+            }
+
+            i--; // Undo lookahead.
+            PushToken(toks, tok);
+        }
+
+        else if (current == '"')
+        {
+            tok.type = TokenType::STRING;
+
+            // Eat quotes
+            i++;
+            current = src[i];
+            tok.col_number++;
+
+            // Find closing quotes
+            while (i < src_end)
+            {
+                if (current == '"')
+                {
+                    // Eat closing quotes
+                    i++;
+                    current = src[i];
+                    tok.col_number++;
+                    break;
+                }
+
+                else
+                {
+                    tok.text.append(1, current);
+                }
+
+                // Increment current character
+                i++;
+                current = src[i];
+                tok.col_number++;
+            }
+
+            if (i >= src_end)
+            {
+                Error("Expected closing quotes following opening quotes", tok.line_number, tok.col_number);
+                return false;
+            }
+
+            i--;
+            PushToken(toks, tok);
+        }
+    }
+    return true;
+}
+
+
+void Corth::PrintToken(Token& t)
+{
+
+    if (t.data.empty())
+    {
+        printf("TOKEN(%s, %s)\n", TokenTypeStr(t.type).c_str(), t.text.c_str());
+    }
+
+    else
+    {
+        printf("TOKEN(%s, %s, %s)\n", TokenTypeStr(t.type).c_str(), t.text.c_str(), t.data.c_str());
+    }
+}
+
+
+void Corth::PrintTokens(Program& p)
+{
+    printf("%s\n", "TOKENS:");
+    size_t instr_ptr = 0;
+    size_t instr_ptr_max = p.tokens.size();
+
+    for (size_t instr_ptr = 0; instr_ptr < instr_ptr_max; instr_ptr++)
+    {
+        printf("    %zu: ", instr_ptr);
+        PrintToken(p.tokens[instr_ptr]);
+    }
+}
+
+
+bool Corth::RemovableToken(Token& tok)
+{
+    if (tok.type == TokenType::WHITESPACE)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+void Corth::TokenStackError(Token& tok)
+{
+    // This token could cause serious memory issues (by popping a value off the stack that doesn't exist)
+    // It is marked for removal by setting it's type to whitespace.
+    // Might be better to think of a better way to handle this.
+    tok.type = TokenType::WHITESPACE;
+    StackError(tok.line_number, tok.col_number);
+}
+
+

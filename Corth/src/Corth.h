@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include <string>
 #include <vector>
+#include <sstream>
+
 
 namespace Corth
 {
@@ -25,11 +27,11 @@ namespace Corth
 
     enum class PLATFORM
     {
-        WIN64,
+        WIN,
         COUNT
     };
 
-    PLATFORM RUN_PLATFORM = PLATFORM::WIN64;
+    PLATFORM RUN_PLATFORM = PLATFORM::WIN;
 
     enum class ASM_SYNTAX
     {
@@ -134,9 +136,28 @@ namespace Corth
     // Generating the ASM code for GAS ASSEMBLER
     void generateAssembly_GAS_win64(Program& program);
 
-    // Handle the command line arguments that are passed to the program.
-    // Return value:
-    // False = Execution will halt in main function
-    // True = Execution will continue in main function
+    /* Handle the command line arguments that are passed to the program.
+        @return value:
+        * False = Execution will halt in main function
+        * True = Execution will continue in main function
+    */
     bool handleCommandLineArgs(int argc, char** argv);
+
+    // Checks if a passed character is a whitespace character or not
+    bool isWhiteSpace(char& c);
+
+    // Push tokens in to the token vector
+    void pushToken(std::vector<Token>& tokList, Token& tok);
+
+    // Convert the source code into tokens
+    bool lex(Program& program);
+
+    void PrintToken(Token& t);
+
+    void PrintTokens(Program& p);
+
+    bool RemovableToken(Token& tok);
+
+    void TokenStackError(Token& tok);
+
 }
