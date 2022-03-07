@@ -9,9 +9,9 @@ This was literlly fueled by a high I was chasing at that momemt. I wanted to be 
 Corth is:
 - [x] A [stack based](https://en.wikipedia.org/wiki/Stack-oriented_programming) programming language
     I do recommend you to read the link above.
-- [x] [Turing complete](https://en.wikipedia.org/wiki/Turing_completeness) (see [rule 110 example](./examples/rule110.corth))
+- [x] [Turing complete](https://en.wikipedia.org/wiki/Turing_completeness)
 - [x] Compileable to a dynamic executable linked with the C RunTime.
-- [x] Totally awesome annoying language.
+- [x] Totally awesome and annoying language.
 
 
 ## Something to Understand Before Checking Corth out
