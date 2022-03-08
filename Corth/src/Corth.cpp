@@ -1317,7 +1317,7 @@ bool Corth::handleCommandLineArgs(int argc, char **argv)
             Corth::ASMB_OPTS = "-f win64";
             // Get Golink in the system
              Corth::LINK_PATH = "\\Golink\\golink.exe";
-             Corth::LINK_OPTS = "/console /ENTRY:main msvcrt.dll";
+             Corth::LINK_OPTS = "\\console\\ENTRY:main msvcrt.dll";
         }
 
         else if (arg == "-GAS")
@@ -1618,4 +1618,59 @@ void Corth::TokenStackError(Token& tok)
     StackError(tok.line_number, tok.col_number);
 }
 
+void Corth::validateTokens_stack(Program &prog)
+{
+    std::vector<Token>& toks = prog.tokens;
 
+    // number of things in the virtual stack
+    size_t stackSize = 0;
+
+    static_assert(static_cast<int>(TokenType::COUNT) ==5, "Exhaustive handling of token types in ValidateTokens_Stack");
+    for(const auto& tok : toks)
+    {
+        if(tok.type == TokenType::WHITESPACE)
+        {
+            Warning("Validator: Whitespace Tokens should not appear in the final program. Program with Lexing?",tok.line_number, tok.col_number);
+        }
+        
+        else if(tok.type == TokenType::INT ||tok.type == TokenType::STRING)
+        {
+            stackSize++;
+        }
+
+        else if(tok.type == TokenType::OP)
+        {
+            static_assert(OP_COUNT == 15, "Exhaustive handling of operators in ValidateTokens_Stack");
+
+            // Operators that pop two values off the stack and return one to it
+            if(tok.text == "+"
+                || tok.text == "-"
+                || tok.text == "*"
+                || tok.text == "/"
+                || tok.text == "%"
+                // conditionals
+                || tok.text == "="
+                || tok.text == "<"
+                || tok.text == ">"
+                || tok.text == "<="
+                || tok.text == ">="
+                // bitwise
+                || tok.text == "<<"
+                || tok.text == ">>"
+                || tok.text == "||"
+                || tok.text == "&&")
+            {
+                // Two values removed, result added, net loss of one
+                if (stackSize > 1)
+                {
+                    stackSize--;
+                }
+
+                else
+                {
+                    TokenStackError(tok);
+                }
+            }
+        }
+    }
+}

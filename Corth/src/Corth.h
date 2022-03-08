@@ -160,4 +160,8 @@ namespace Corth
 
     void TokenStackError(Token& tok);
 
+    // This function simulates the program running on its most basic level: adding and removing from the stack.
+    // A read-access violation can occur if trying to pop off the stack without pushing something on first.
+    // To prevent this violation during runtime of Corth, this function catches over-popping before it can happen.
+    void validateTokens_stack(Program& prog);
 }
