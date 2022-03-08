@@ -1672,5 +1672,25 @@ void Corth::validateTokens_stack(Program &prog)
                 }
             }
         }
+        else if(tok.type == TokenType::KEYWORD)
+        {
+            static_assert(KEYWORD_COUNT == 28, "Exhaustive handling of keywords in ValidateTokens_Stack");
+
+            // Skip skippable tokens first? For Speed?
+            if(tok.text == getKeywordStr(Keyword::ELSE)
+                || tok.text == getKeywordStr(Keyword::ENDIF)
+                || tok.text == getKeywordStr(Keyword::IF)
+                || tok.text == getKeywordStr(Keyword::ENDWHILE))
+            {
+                continue;
+            }
+
+            else if(tok.text== getKeywordStr(Keyword::IF)
+                    || tok.text == getKeywordStr(Keyword::DO))
+            {
+                // Note: both `if` and `do` would need to pop from the stack to check the condition
+                // to see if it needs to jump or not {<condition>} -> { }
+            }
+        }
     }
 }
