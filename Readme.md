@@ -7,13 +7,41 @@ It's like [Porth](https://gitlab.com/tsoding/porth/-/tree/master/), which is lik
 This was literlly fueled by a high I was chasing at that momemt. I wanted to be better at Programming specifically low level programming.
 
 Corth is:
+
 - [x] A [stack based](https://en.wikipedia.org/wiki/Stack-oriented_programming) programming language
     I do recommend you to read the link above.
 - [x] [Turing complete](https://en.wikipedia.org/wiki/Turing_completeness)
 - [x] Compileable to a dynamic executable linked with the C RunTime.
 - [x] Totally awesome and annoying language.
 
-
 ## Something to Understand Before Checking Corth out
+
 Corth uses the [system](https://en.cppreference.com/w/cpp/utility/program/system) function within C++ to run external commands on your computer. These commands can be affected by user input, so running corth has the potential to run any command on your system if you tell it to, including malicious ones. Be sure to check and double check any commands you see that use the `-a` or `-l` compiler options, as these tell Corth to run a different command than the default. Every command run by Corth is echoed to the standard out with a '[CMD]' prefix.
 Be careful when running commands that you don't want to run, as they can be used to run malicious code.
+
+## Keywords  <a name="corth-keywords"></a>
+
+| Keyword                | Notation                    | Description                                                            |
+|:----------------------:|:---------------------------:|:-----------------------------------------------------------------------|
+|[if](#kw-if)            | `[a] -> []`                 | Jump to `else`/`endif` only if popped value is equal to zero.          |
+|[else](#kw-else)        | `[] -> []`                  | Inside this block is what will be ran if `if` condition is false.      |
+|[endif](#kw-endif)      | `[] -> []`                  | Required block-ending-symbol for `if` keyword.                         |
+|[do](#kw-do)            | `[a] -> []`                 | Jumps just past `endwhile` if popped value is zero.                    |
+|[while](#kw-while)      | `[] -> []`                  | Generates a label for `endwhile` to jump to.                           |
+|[endwhile](#kw-endwhile)| `[] -> []`                  | Generates a label for `do` to jump to upon false condition.            |
+|[dup](#kw-dup)          | `[a] -> [a][a]`             | Duplicate top of stack.                                                |
+|[twodup](#kw-twodup)    | `[a][b] -> [a][b][a][b]`    | Duplicate two items on top of stack.                                   |
+|[drop](#kw-drop)        | `[a] -> []`                 | Deletes the top-most item off the stack.                               |
+|[swap](#kw-swap)        | `[a][b] -> [b][a]`          | Pushes two popped values back in reverse order.                        |
+|[over](#kw-over)        | `[a][b] -> [a][b][a]`       | Pushes the stack item below the top on to the top.                     |
+|[dump](#kw-dump)        | `[a] -> []`                 | Equivalent to [#](#op-dump) operator.                                  |
+|[dump_c](#kw-dump-c)    | `[a] -> []`                 | Pops a value off the stack, then prints it formatted as a char.        |
+|[dump_s](#kw-dump-s)    | `[a] -> []`                 | Pops a value off the stack, then prints it formatted as a string.      |
+|[mem](#kw-mem)          | `[] -> [addr]`              | Pushes the address of the usable memory in Corth.                      |
+|[store<x>](#kw-store)   | `[addr][a] -> []`           | Stores the popped value at popped memory address.                      |
+|[load<x>](#kw-load)     | `[addr] -> [a]`             | Pushes the value read at popped address on to the stack.               |
+|[shl](#kw-shl)          | `[a][b] -> [a << b]`        | Equivalent to [<<](#op-bit-shl) operator.                              |
+|[shr](#kw-shr)          | `[a][b] -> [a >> b]`        | Equivalent to [>>](#op-bit-shr) operator.                              |
+|[and](#kw-and)          | `[a][b] -> [a && b]`        | Equivalent to [&&](#op-bit-and) operator.                              |
+|[or](#kw-or)            | `[a][b] -> [a \|\| b]`      | Equivalent to [\|\|](#op-bit-or) operator.                             |
+|[mod](#kw-mod)          | `[a][b] -> [a % b]`         | Equivalent to [%](#op-modulo) operator.                                |
