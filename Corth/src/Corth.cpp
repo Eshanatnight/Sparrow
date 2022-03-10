@@ -1,5 +1,6 @@
 ﻿#include "Corth.h"
 #include <fstream>
+#include <algorithm>
 
 bool Corth::isOperator(char& c)
 {
@@ -1145,7 +1146,6 @@ void Corth::generateAssembly_GAS_win64(Program &prog)
 
 }
 
-
 bool Corth::handleCommandLineArgs(int argc, char **argv)
 {
     static_assert(static_cast<int>(MODE::COUNT) == 2, "Exhaustive handling of supported modes in handleCMDLineArgs function");
@@ -1313,6 +1313,7 @@ bool Corth::handleCommandLineArgs(int argc, char **argv)
 
             // SET PLATFORM SPECIFIC DEFAULTS
             // Defaults assume tools were installed on the default drive as in the installer.
+            // Change the Paths to the correct paths that are in the Working Directory.
             Corth::ASMB_PATH = "C:\\Program Files\\NASM\\nasm.exe";
             Corth::ASMB_OPTS = "-f win64";
             // Get Golink in the system
@@ -1355,7 +1356,6 @@ bool Corth::handleCommandLineArgs(int argc, char **argv)
     return true;
 }
 
-
 bool Corth::isWhiteSpace(char& c)
 {
     // Basically checks if the character is a space, tab, newline or crlf
@@ -1387,7 +1387,7 @@ bool Corth::lex(Program &program)
     Token tok;
     char current = src[0];
 
-    for(int i =0; i < src_end ++i)
+    for(int i =0; i < src_end; ++i)
     {
         current = src[i];
         tok.col_number++;
@@ -1569,7 +1569,6 @@ bool Corth::lex(Program &program)
     return true;
 }
 
-
 void Corth::PrintToken(Token& t)
 {
 
@@ -1584,11 +1583,9 @@ void Corth::PrintToken(Token& t)
     }
 }
 
-
 void Corth::PrintTokens(Program& p)
 {
     printf("%s\n", "TOKENS:");
-    size_t instr_ptr = 0;
     size_t instr_ptr_max = p.tokens.size();
 
     for (size_t instr_ptr = 0; instr_ptr < instr_ptr_max; instr_ptr++)
@@ -1598,8 +1595,7 @@ void Corth::PrintTokens(Program& p)
     }
 }
 
-
-bool Corth::RemovableToken(Token& tok)
+bool Corth::removableToken(Token& tok)
 {
     if (tok.type == TokenType::WHITESPACE)
     {
@@ -1625,12 +1621,15 @@ void Corth::validateTokens_stack(Program &prog)
     // number of things in the virtual stack
     size_t stackSize = 0;
 
-    static_assert(static_cast<int>(TokenType::COUNT) ==5, "Exhaustive handling of token types in ValidateTokens_Stack");
-    for(const auto& tok : toks)
+    static_assert(static_cast<int>(TokenType::COUNT) ==5,
+            "Exhaustive handling of token types in ValidateTokens_Stack");
+
+    for(auto& tok : toks)
     {
         if(tok.type == TokenType::WHITESPACE)
         {
-            Warning("Validator: Whitespace Tokens should not appear in the final program. Program with Lexing?",tok.line_number, tok.col_number);
+            Warning("Validator: Whitespace Tokens should not appear in the final program. Program with Lexing?"
+                    ,tok.line_number, tok.col_number);
         }
 
         else if(tok.type == TokenType::INT ||tok.type == TokenType::STRING)
@@ -1690,7 +1689,317 @@ void Corth::validateTokens_stack(Program &prog)
             {
                 // Note: both `if` and `do` would need to pop from the stack to check the condition
                 // to see if it needs to jump or not {<condition>} -> { }
+                if (stackSize > 0)
+                {
+                    stackSize--;
+                }
+
+                else
+                {
+                    TokenStackError(tok);
+                }
+            }
+
+            // dup will pop from the stack then push that value back
+            else if (tok.text == getKeywordStr(Keyword::DUP))
+            {
+                if (stackSize > 0)
+                {
+                    stackSize++;
+                }
+
+                else
+                {
+                    TokenStackError(tok);
+                }
+            }
+
+            // dup will pop from the stack then push that value back twice
+            else if(tok.text == getKeywordStr(keyword::TWODUP))
+            {
+                if (stackSize > 1)
+                {
+                    stackSize += 2;
+                }
+
+                else
+                {
+                    TokenStackError(tok);
+                }
+            }
+
+            // `mem` will push the address of usable memory onto the stack
+            // { } -> {<memory address>}
+            else if (tok.text == GetKeywordStr(Keyword::MEM))
+            {
+                stackSize++;
+            }
+
+            // `loadb` operations will pop an address from the stack,
+            //   then push the value at that address.
+            // {<address>} -> {<value>}
+            else if(tok.text == getKeywordStr(Keyword::LOADB)
+                    || tok.text == getKeywordStr(Keyword::LOADW)
+                    || tok.text == getKeywordStr(Keyword::STOREB)
+                    || tok.text == getKeywordStr(Keyword::STOREW))
+            {
+                if (stackSize > 0)
+                {
+                    stackSize--;
+                }
+
+                else
+                {
+                    TokenStackError(tok);
+                }
+            }
+
+            // `store` operations will pop a value and an address from the stack.
+            // {<address>, <value>} -> { }
+            else if(tok.text == getKeywordStr(Keyword::STOREB)
+                    || tok.text == getKeywordStr(Keyword::STOREW)
+                    || tok.text == getKeywordStr(Keyword::STORED)
+                    || tok.text == getKeywordStr(Keyword::STOREQ))
+            {
+                if (stackSize > 1)
+                {
+                    stackSize -= 2;
+                }
+
+                else
+                {
+                    TokenStackError(tok);
+                }
+            }
+
+            // both `dump`, `dump_c`, `dump_s`, and `drop` will take an item off the stack
+            // without returning anything {a} -> { }
+            else if(tok.text == getKeywordStr(Keyword::DUMP)
+                    || tok.text == getKeywordStr(Keyword::DUMP_C)
+                    || tok.text == getKeywordStr(Keyword::DUMP_S)
+                    || tok.text == getKeywordStr(Keyword::DROP))
+            {
+                if (stackSize > 0)
+                {
+                    stackSize--;
+                }
+
+                else
+                {
+                    TokenStackError(tok);
+                }
+            }
+
+            // `swap` will pop two items and push two values, net zero
+            else if(tok.text == getKeywordStr(Keyword::SWAP))
+            {
+                if(stackSize > 1)
+                {
+                    continue;
+                }
+
+                else
+                {
+                    TokenStackError(tok);
+                }
+            }
+
+            // Over will pop two values but push three values, net one
+            // {a, b} -> {a, b, a}
+            else if(tok.text == getKeywordStr(Keyword::OVER))
+            {
+              if (stackSize > 1)
+              {
+                  stackSize++;
+              }
+
+              else
+              {
+                  TokenStackError(tok);
+              }
+            }
+
+            // Bitwise-shift left and right, bitwise-or and bitwise-and, as well as modulo will pop two
+            // values off the stack and add one, net negative one
+            // {a, b} -> {c}
+            else if(tok.text == getKeywordStr(Keyword::SHL)
+                    || tok.text == getKeywordStr(Keyword::SHR)
+                    || tok.text == getKeywordStr(Keyword::OR)
+                    || tok.text == getKeywordStr(Keyword::AND)
+                    || tok.text == getKeywordStr(Keyword::MOD))
+            {
+                if (stackSize > 1)
+                {
+                    stackSize--;
+                }
+
+                else
+                {
+                    TokenStackError(tok);
+                }
+            }
+
+        }
+    }
+
+    // Stack Validation: Stack should be empty at the end of the program
+    if (stackSize != 0)
+    {
+        Warning("Validator: Best practices indicate stack should be empty at end of program.\n"
+                "Stack Size at End of Program: " + std::to_string(stackSize));
+    }
+}
+
+bool Corth::validateBlock(Program& prog, size_t& instr_ptr, size_t instr_ptr_max)
+{
+    // Assume that current token at instruction pointer is an `if`, `else`, `do`, or `while`
+    size_t block_instr_ptr = instr_ptr;
+
+    static_assert(static_cast<int>(Keyword::COUNT) == 28,
+            "Exhaustive handling of keywords in ValidateBlock. Keep in mind not all keywords form blocks.");
+
+    // handle the while block
+    if(prog.tokens[instr_ptr].text == getKeywordStr(Keyword::WHILE))
+    {
+        // Find `do`, error if you can't. Set `do` data field to WHILE instr_ptr temporarily for endwhile to use
+        while(instr_ptr < instr_ptr_max)
+        {
+            if (prog.tokens[instr_ptr].text == getKeywordStr(Keyword::DO))
+            {
+                prog.tokens[instr_ptr].data = std::to_string(block_instr_ptr);
+                return validateBlock(prog, instr_ptr, instr_ptr_max);
+
+                // Undo look-ahead
+                instr_ptr--;
+            }
+
+            else if(prog.tokens[instr_ptr].text == getKeywordStr(Keyword::IF)
+                    || prog.tokens[instr_ptr].text == getKeywordStr(Keyword::ELSE)
+                    || prog.tokens[instr_ptr].text == getKeywordStr(Keyword::ENDIF)
+                    || instr_ptr + 1 == instr_ptr_max)
+            {
+                Error("Expected`" + getKeywordStr(Keyword::DO) + "` after `" +
+                    getKeywordStr(Keyword::WHILE) + "`", prog.tokens[instr_ptr].line_number,
+                    prog.tokens[instr_ptr].col_number);
+
+                return false;
+            }
+
+            instr_ptr++;
+        }
+    }
+
+    while(instr_ptr_max > instr_ptr)
+    {
+        instr_ptr++;
+
+        if(prog.tokens[instr_ptr].type == TokenType::KEYWORD)
+        {
+            if(prog.tokens[instr_ptr].text == getKeywordStr(Keyword::IF))
+            {
+                // recursively validate the nested-if blocks
+                validateBlock(prog, instr_ptr, instr_ptr_max);
+            }
+
+            else if(prog.tokens[instr_ptr].text == getKeywordStr(Keyword::ELSE))
+            {
+                if(prog.tokens[block_instr_ptr].text == getKeywordStr(Keyword::IF))
+                {
+                    // Upon an `if` reaching an `else`, the `if` data field should be updated to the `else` instr_ptr
+                    prog.tokens[block_instr_ptr].data = std::to_string(instr_ptr);
+
+                    // recursively validate the else blocks
+                    return validateBlock(prog, instr_ptr, instr_ptr_max);
+                }
+
+                else
+                {
+                    Error("`" + getKeywordStr(Keyword::ELSE) + "` must be within `" +
+                        getKeywordStr(Keyword::IF) + "` block(s)", prog.tokens[instr_ptr].line_number,
+                        prog.tokens[instr_ptr].col_number);
+
+                    retur false;
+                }
+            }
+
+            else if(prog.tokens[instr_ptr].text == getKeywordStr(Keyword::WHILE))
+            {
+                // Recursively validate nested while
+                validateBlock(prog, instr_ptr, instr_ptr_max);
+            }
+
+            else if(prog.tokens[instr_ptr].text == getKeywordStr(Keyword::ENDWHILE))
+            {
+                if (prog.tokens[block_instr_ptr].text == getKeywordStr(Keyword::DO))
+                {
+                    // An endwhile must set the `do` data field to its instruction pointer
+                    //(to jump to upon condition fail). It must first set it's own data field to
+                    // it's jump point, which is the `do` 's data field before we change it.
+                    prog.tokens[instr_ptr].data = prog.tokens[block_instr_ptr].data;
+                    prog.tokens[block_instr_ptr].data = std::to_string(instr_ptr);
+
+                    return true;
+                }
+
+                Error("`" + getKeywordStr(Keyword::ENDWHILE) + "` keyword can only be used within `"
+                        +getKeywordStr(Keyword::DO) + "` blocks", prog.tokens[instr_ptr].line_number,
+                        prog.tokens[instr_ptr].col_number);
+
+                return false;
+            }
+
+            else if (prog.tokens[instr_ptr].text == getKeywordStr(Keyword::ENDIF))
+            {
+                if (prog.tokens[block_instr_ptr].text == getKeywordStr(Keyword::IF)
+                    || prog.tokens[block_instr_ptr].text == getKeywordStr(Keyword::ELSE))
+                {
+                    prog.tokens[block_instr_ptr].data = std::to_string(instr_ptr);
+                    return true;
+                }
+                Error("`" + getKeywordStr(Keyword::ENDIF) + "` keyword can only be used within `"
+                + getKeywordStr(Keyword::IF) + "` blocks", prog.tokens[instr_ptr].line_number,
+                prog.tokens[instr_ptr].col_number);
+
+                return false;
             }
         }
     }
+    return false;
 }
+
+void Corth::validateTokens_blocks(Program &prog)
+{
+    static_assert(static_cast<int>(Keyword::COUNT) == 28,
+            "Exhaustive handling of keywords in ValidateTokens_Blocks. Keep in mind not all tokens form blocks");
+
+    size_t instr_ptr = 0;
+    size_t instr_ptr_max = prog.tokens.size();
+    while (instr_ptr < instr_ptr_max) {
+        if (prog.tokens[instr_ptr].text == getKeywordStr(Keyword::IF)
+        || prog.tokens[instr_ptr].text == getKeywordStr(Keyword::WHILE))
+        {
+            validateBlock(prog, instr_ptr, instr_ptr_max);
+            // Undo look-ahead
+            instr_ptr--;
+        }
+        instr_ptr++;
+    }
+}
+
+void Corth::validateTokens(Program &prog)
+{
+    // Stack Protection
+    validateTokens_stack(prog);
+
+    // Cross-reference blocks (give `if` tokens a reference to it's `endif` counterpart
+    validateTokens_blocks(prog);
+
+    // Remove un-necessary tokens
+    static_cast<void>(std::remove_if(prog.tokens.begin(), prog.tokens.end(), removableToken));
+
+    if (verbose_logging)
+    {
+        Log("Tokens validated");
+    }
+}
+

@@ -156,7 +156,7 @@ namespace Corth
 
     void PrintTokens(Program& p);
 
-    bool RemovableToken(Token& tok);
+    bool removableToken(Token& tok);
 
     void TokenStackError(Token& tok);
 
@@ -164,4 +164,10 @@ namespace Corth
     // A read-access violation can occur if trying to pop off the stack without pushing something on first.
     // To prevent this violation during runtime of Corth, this function catches over-popping before it can happen.
     void validateTokens_stack(Program& prog);
+
+    bool validateBlock(Program& prog, size_t& instr_ptr, size_t instr_ptr_max);
+
+    void validateTokens_blocks(Program& prog);
+
+    void validateTokens(Program& prog);
 }
