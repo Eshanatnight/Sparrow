@@ -170,4 +170,12 @@ namespace Corth
     void validateTokens_blocks(Program& prog);
 
     void validateTokens(Program& prog);
+
+    // This function is my Windows version of the `where` cmd
+    // this would check for the file with respect to the binary location.
+    bool fileExists(const std::string& filepath);
+
+    std::string loadFromFile(const std::string& filepath);
+
+    void printCharactersFromFile(std::string filePath, std::string logPrefix = "[LOG]");
 }

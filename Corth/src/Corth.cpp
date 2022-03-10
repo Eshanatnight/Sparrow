@@ -1,6 +1,7 @@
 ﻿#include "Corth.h"
 #include <fstream>
 #include <algorithm>
+#include <stdlib.h>
 
 bool Corth::isOperator(char& c)
 {
@@ -146,7 +147,6 @@ void Corth::printUseage()
 printf("\n%s\n", "Usage: `Corth.exe <flags> <options> Path/To/File.corth`");
         printf("    %s\n", "Flags:");
         printf("        %s\n", "-win, -win64             | (default) Generate assembly for Windows 64-bit. If no platform is specified, this is the default.");
-        printf("        %s\n", "-linux, -linux64         | Generate assembly for Linux 64-bit.");
         printf("        %s\n", "-com, --compile          | (default) Compile program from source into executable");
         printf("        %s\n", "-gen, --generate         | Generate assembly, but don't create an executable from it.");
         printf("        %s\n", "-NASM                    | (default) When generating assembly, use NASM syntax. Any OPTIONS set before NASM may or may be over-ridden; best practice is to put it first.");
@@ -155,7 +155,7 @@ printf("\n%s\n", "Usage: `Corth.exe <flags> <options> Path/To/File.corth`");
         printf("    %s\n", "Options (latest over-rides):");
         printf("        %s\n", "Usage: <option> <input>");
         printf("        %s\n", "If the <input> contains spaces, be sure to surround it by double quotes");
-        printf("        %s\n", "-o, --output-name        | Specify name of generated files. On Linux, affects only generated assembly file; use -add-ao/-add-lo to specify output object and executable file name manually");
+        printf("        %s\n", "-o, --output-name        | Specify name of generated files.");
         printf("        %s\n", "-a, --assembler-path     | Specify path to assembler (include extension)");
         printf("        %s\n", "-l, --linker-path        | Specify path to linker (include extension)");
         printf("        %s\n", "-ao, --assembler-options | Command line arguments called with assembler");
@@ -1276,12 +1276,6 @@ bool Corth::handleCommandLineArgs(int argc, char **argv)
             RUN_PLATFORM = PLATFORM::WIN;
         }
 
-        #ifdef  LIN_SUPPORT
-        else if (arg == "--linux" || arg == "--linux64")
-        {
-            RUN_PLATFORM = PLATFORM::LINUX;
-        }
-        #endif
 
         else if (arg == "-win32" || arg == "-m32" || arg == "-Wa,--32")
         {
@@ -1289,13 +1283,6 @@ bool Corth::handleCommandLineArgs(int argc, char **argv)
             return false;
         }
 
-        #ifdef LIN_SUPPORT
-        else if(arg == "-linux32")
-        {
-            Error("32-bit mode is not supported!");
-            return false;
-        }
-        #endif
 
         else if (arg == "-com" || arg == "--compile")
         {
@@ -1324,21 +1311,13 @@ bool Corth::handleCommandLineArgs(int argc, char **argv)
         else if (arg == "-GAS")
         {
             ASSEMBLY_SYNTAX = ASM_SYNTAX::GAS;
-            #ifdef _WIN64
             // Defaults assume tools were installed on the same drive as Corth as well as in the root directory of the drive.
             // TODO: Might need TDM-GCC to be installed
             Corth::ASMB_PATH = "\\TDM-GCC-64\\bin\\gcc.exe";
             Corth::ASMB_OPTS = "-e main";
             Corth::LINK_PATH = "";
             Corth::LINK_OPTS = "";
-            #endif
 
-            #ifdef LIN_SUPPORT
-            Corth::ASMB_PATH = "gcc";
-            Corth::ASMB_OPTS = "-e main";
-            Corth::LINK_PATH = "";
-            Corth::LINK_OPTS = "";
-            #endif
         }
 
         else
@@ -2000,6 +1979,112 @@ void Corth::validateTokens(Program &prog)
     if (verbose_logging)
     {
         Log("Tokens validated");
+    }
+}
+
+bool Corth::fileExists(const std::string& filepath)
+{
+    std::ifstream file(filepath);
+
+    /*
+      if(file.is_open())
+      {
+          file.close();
+          return true;
+      }
+     */
+
+    if(file.good())
+    {
+        file.close();
+        return true;
+    }
+
+    // Get PATH system variable on Windows
+    std::vector<std::string> path_var;
+    size_t buf_sz = 2048;
+
+    char* buf[2048];
+
+    if(_dupenv_s(buf, &buf_sz, "PATH"))
+    {
+        Error("Could not get PATH environment variable");
+    }
+
+    // Split path by semi-colon, and ensure there is a slash at the end of every split.
+    std::string temp;
+    std::string path_var_str(buf[0], buf_sz);
+    std::stringstream path_var_ss(path_var_str);
+
+    while (std::getline(path_var_ss, tmp, ';'))
+    {
+        if (tmp.back() != '\\' || tmp.back() != '/')
+        {
+            tmp.append(1, '/');
+        }
+
+        path_var.push_back(tmp);
+    }
+
+    // Check each path in Windows PATH variable if file exists
+    for (auto& path : path_var)
+    {
+        std::string test(path + filePath);
+        if (Corth::verboseLogging)
+        {
+            Corth::Log("Testing " + test);
+        }
+
+        std::ifstream f(test);
+
+        if (f.is_open())
+        {
+            f.close();
+            return true;
+        }
+    }
+    return false;
+}
+
+// Load a file into a string from a path.
+std::string Corth::loadFromFile(const std::string& filePath)
+{
+    std::ifstream inFileStream(filePath);
+    if (!inFileStream)
+    {
+        throw std::runtime_error(("File not found at " + filePath).c_str());
+    }
+    return std::string(std::istreambuf_iterator<char>(inFileStream), std::istreambuf_iterator<char>());
+}
+
+void Corth::printCharactersFromFile(std::string filePath, std::string logPrefix = "[LOG]")
+{
+    FILE* file_ptr {nullptr};
+    char c;
+    file_ptr = fopen(filePath.c_str(), "r");
+
+    if (file_ptr != nullptr)
+    {
+        // Don't print if log-file is empty
+        fseek(file_ptr, 0, SEEK_END);
+
+        if (ftell(file_ptr) != 0)
+        {
+            printf("%c", '\n');
+
+            // Navigate back to beginning of file
+            fseek(file_ptr, 0, SEEK_SET);
+            printf("%s (%s):\n", logPrefix.c_str(), filePath.c_str());
+
+            c = fgetc(file_ptr);
+
+            while (c != EOF)
+            {
+                printf("%c", c);
+                c = fgetc(file_ptr);
+            }
+        }
+        fclose(file_ptr);
     }
 }
 
