@@ -1149,7 +1149,7 @@ void Corth::generateAssembly_GAS_win64(Program &prog)
 bool Corth::handleCommandLineArgs(int argc, char **argv)
 {
     static_assert(static_cast<int>(MODE::COUNT) == 2, "Exhaustive handling of supported modes in handleCMDLineArgs function");
-    static_assert(static_cast<int>(PLATFORM::COUNT) == 0 , "Exhaustive handling of supported platforms in handleCMDLineArgs function");
+    static_assert(static_cast<int>(PLATFORM::COUNT) == 1 , "Exhaustive handling of supported platforms in handleCMDLineArgs function");
     static_assert(static_cast<int>(ASM_SYNTAX::COUNT) == 2, "Exhaustive handling of supported assembly syntaxes in handleCMDLineArgs function");
 
     // No command line arguments were passed.
@@ -1191,13 +1191,13 @@ bool Corth::handleCommandLineArgs(int argc, char **argv)
                 ++i;
                 ASMB_PATH = argv[i];
             }
-            else 
+            else
             {
                 Error("Expected path to assembler to be specified after `-a`!");
                 return false;
             }
         }
-        
+
         else if (arg == "-ao" || arg == "--assembler-options")
         {
             if (i + 1 < argc)
@@ -1632,7 +1632,7 @@ void Corth::validateTokens_stack(Program &prog)
         {
             Warning("Validator: Whitespace Tokens should not appear in the final program. Program with Lexing?",tok.line_number, tok.col_number);
         }
-        
+
         else if(tok.type == TokenType::INT ||tok.type == TokenType::STRING)
         {
             stackSize++;
