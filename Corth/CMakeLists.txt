@@ -6,6 +6,7 @@ cmake_minimum_required (VERSION 3.8)
 # Add source to this project's executable.
 add_executable (Corth
         "src/Corth.cpp"
-        "src/Corth.h")
+        "src/Corth.h"
+        "src/main.cpp"
+        )
 
-# TODO: Add tests and install targets if needed.
