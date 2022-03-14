@@ -4,11 +4,11 @@
 #include <sstream>
 
 
-namespace Corth
+namespace Sparrow
 {
     const unsigned int MEM_CAPACITY = 720000;
-    std::string SOURCE_PATH = "main.corth";
-    std::string OUTPUT_NAME = "main_corth";
+    std::string SOURCE_PATH = "main.spar";
+    std::string OUTPUT_NAME = "main_sparrow";
     std::string ASMB_PATH = "";
     std::string LINK_PATH = "";
     std::string ASMB_OPTS = "";

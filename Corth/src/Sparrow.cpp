@@ -1,9 +1,9 @@
-﻿#include "Corth.h"
+﻿#include "Sparrow.h"
 #include <fstream>
 #include <algorithm>
 #include <stdlib.h>
 
-bool Corth::isOperator(char& c)
+bool Sparrow::isOperator(char& c)
 {
     		return c == '+'    // addition
 			|| c == '-'    // subtraction
@@ -18,7 +18,7 @@ bool Corth::isOperator(char& c)
 			|| c == '|';   // bitwise or (when combined with another)
 }
 
-bool Corth::isKeyword(std::string& word)
+bool Sparrow::isKeyword(std::string& word)
 {
     static_assert(static_cast<int>(Keyword::COUNT) == 28, "Exhaustive handling of keywords in iskeyword");
 
@@ -56,7 +56,7 @@ bool Corth::isKeyword(std::string& word)
         return false;
 }
 
-std::string Corth::getKeywordStr(Keyword word)
+std::string Sparrow::getKeywordStr(Keyword word)
 {
     static_assert(static_cast<int>(Keyword::COUNT) == 28, "Exhaustive handling of keywords in getKeywordStr Function");
 
@@ -103,7 +103,7 @@ std::string Corth::getKeywordStr(Keyword word)
 }
 
 
-std::string Corth::TokenTypeStr(TokenType& t)
+std::string Sparrow::TokenTypeStr(TokenType& t)
 {
     static_assert(static_cast<int>(TokenType::COUNT) == 5, "Exhaustive handling of TokenType in TokenTypeStr Function");
 
@@ -137,21 +137,21 @@ std::string Corth::TokenTypeStr(TokenType& t)
     return "Error";
 }
 
-Corth::Token::Token()
+Sparrow::Token::Token()
 : type(TokenType::WHITESPACE), text(""), line_number(1), col_number(1)
 {}
 
 
-void Corth::printUseage()
+void Sparrow::printUseage()
 {
-printf("\n%s\n", "Usage: `Corth.exe <flags> <options> Path/To/File.corth`");
+printf("\n%s\n", "Usage: `Sparrow.exe <flags> <options> Path/To/File.corth`");
         printf("    %s\n", "Flags:");
         printf("        %s\n", "-win, -win64             | (default) Generate assembly for Windows 64-bit. If no platform is specified, this is the default.");
         printf("        %s\n", "-com, --compile          | (default) Compile program from source into executable");
         printf("        %s\n", "-gen, --generate         | Generate assembly, but don't create an executable from it.");
         printf("        %s\n", "-NASM                    | (default) When generating assembly, use NASM syntax. Any OPTIONS set before NASM may or may be over-ridden; best practice is to put it first.");
         printf("        %s\n", "-GAS                     | When generating assembly, use GAS syntax. This is able to be assembled by gcc into an executable. (pass output file name to gcc with `-add-ao \"-o <output-file-name>\" and not the built-in `-o` option`). Any OPTIONS set before GAS may or may be over-ridden; best practice is to put it first.");
-        printf("        %s\n", "-v, --verbose            | Enable verbose logging within Corth");
+        printf("        %s\n", "-v, --verbose            | Enable verbose logging within Sparrow");
         printf("    %s\n", "Options (latest over-rides):");
         printf("        %s\n", "Usage: <option> <input>");
         printf("        %s\n", "If the <input> contains spaces, be sure to surround it by double quotes");
@@ -164,7 +164,7 @@ printf("\n%s\n", "Usage: `Corth.exe <flags> <options> Path/To/File.corth`");
         printf("        %s\n", "-add-lo, --add-link-opt  | Append a command line argument to linker options");
 }
 
-std::vector<std::string> Corth::stringToHex(const std::string& input)
+std::vector<std::string> Sparrow::stringToHex(const std::string& input)
 {
     static const char hexDegits[] = "0123456789abcdef";
 
@@ -231,7 +231,7 @@ std::vector<std::string> Corth::stringToHex(const std::string& input)
     return new_output;
 }
 
-void Corth::generateAssembly_NASM_win64(Program& prog)
+void Sparrow::generateAssembly_NASM_win64(Program& prog)
 {
         // Loop through a lexed program and then generate assembly file from it.
         std::string asm_file_path = OUTPUT_NAME + ".asm";
@@ -412,7 +412,7 @@ void Corth::generateAssembly_NASM_win64(Program& prog)
                     {
                         // A call in Windows x64 requires shadow space(spill space or home space) on the stack
                         // It's basically space on the stack the called function will assume to be usable and over-writable
-                        // In Corth, a stack-based language, this obviously causes issues if I don't handle it correctly.
+                        // In Sparrow, a stack-based language, this obviously causes issues if I don't handle it correctly.
                         asm_file << "    ;; -- dump --\n"
                                 << "    lea rcx, [rel fmt]\n"
                                 << "    pop rdx\n"
@@ -692,7 +692,7 @@ void Corth::generateAssembly_NASM_win64(Program& prog)
 // Note: I have not used GAS to test this but to my knowledge it should work
 // If the person reading this is interested in using GAS, feel free to implement
 // and submit a pull request.
-void Corth::generateAssembly_GAS_win64(Program &prog)
+void Sparrow::generateAssembly_GAS_win64(Program &prog)
 {
     std::string asm_file_path = OUTPUT_NAME + ".s";
     std::fstream asm_file;
@@ -1146,7 +1146,7 @@ void Corth::generateAssembly_GAS_win64(Program &prog)
 
 }
 
-bool Corth::handleCommandLineArgs(int argc, char **argv)
+bool Sparrow::handleCommandLineArgs(int argc, char **argv)
 {
     static_assert(static_cast<int>(MODE::COUNT) == 2, "Exhaustive handling of supported modes in handleCMDLineArgs function");
     static_assert(static_cast<int>(PLATFORM::COUNT) == 1 , "Exhaustive handling of supported platforms in handleCMDLineArgs function");
@@ -1301,22 +1301,22 @@ bool Corth::handleCommandLineArgs(int argc, char **argv)
             // SET PLATFORM SPECIFIC DEFAULTS
             // Defaults assume tools were installed on the default drive as in the installer.
             // Change the Paths to the correct paths that are in the Working Directory.
-            Corth::ASMB_PATH = "C:\\Program Files\\NASM\\nasm.exe";
-            Corth::ASMB_OPTS = "-f win64";
+            Sparrow::ASMB_PATH = "C:\\Program Files\\NASM\\nasm.exe";
+            Sparrow::ASMB_OPTS = "-f win64";
             // Get Golink in the system
-             Corth::LINK_PATH = "\\Golink\\golink.exe";
-             Corth::LINK_OPTS = "\\console\\ENTRY:main msvcrt.dll";
+            Sparrow::LINK_PATH = "\\Golink\\golink.exe";
+            Sparrow::LINK_OPTS = "\\console\\ENTRY:main msvcrt.dll";
         }
 
         else if (arg == "-GAS")
         {
             ASSEMBLY_SYNTAX = ASM_SYNTAX::GAS;
-            // Defaults assume tools were installed on the same drive as Corth as well as in the root directory of the drive.
+            // Defaults assume tools were installed on the same drive as Sparrow as well as in the root directory of the drive.
             // TODO: Might need TDM-GCC to be installed
-            Corth::ASMB_PATH = "\\TDM-GCC-64\\bin\\gcc.exe";
-            Corth::ASMB_OPTS = "-e main";
-            Corth::LINK_PATH = "";
-            Corth::LINK_OPTS = "";
+            Sparrow::ASMB_PATH = "\\TDM-GCC-64\\bin\\gcc.exe";
+            Sparrow::ASMB_OPTS = "-e main";
+            Sparrow::LINK_PATH = "";
+            Sparrow::LINK_OPTS = "";
 
         }
 
@@ -1335,13 +1335,13 @@ bool Corth::handleCommandLineArgs(int argc, char **argv)
     return true;
 }
 
-bool Corth::isWhiteSpace(char& c)
+bool Sparrow::isWhiteSpace(char& c)
 {
     // Basically checks if the character is a space, tab, newline or crlf
     return c == ' ' || c == '\t' || c == '\n' || c == '\r';
 }
 
-void Corth::pushToken(std::vector<Token> &tokList, Token &tok)
+void Sparrow::pushToken(std::vector<Token> &tokList, Token &tok)
 {
     // Add token to program if it is not whitespace
     if(tok.type != TokenType::WHITESPACE)
@@ -1355,7 +1355,7 @@ void Corth::pushToken(std::vector<Token> &tokList, Token &tok)
 }
 
 // LEXER
-bool Corth::lex(Program &program)
+bool Sparrow::lex(Program &program)
 {
     std::string src = program.source;
     size_t src_end = src.length();
@@ -1441,7 +1441,7 @@ bool Corth::lex(Program &program)
                     }
                 }
             }
-            PushToken(toks, tok);
+            Sparrow::pushToken(toks, tok);
         }
         else if (isdigit(current))
         {
@@ -1465,7 +1465,7 @@ bool Corth::lex(Program &program)
             }
 
             i--; // Undo lookahead.
-            PushToken(toks, tok);
+            Sparrow::pushToken(toks, tok);
         }
         else if (isalpha(current))
         {
@@ -1500,7 +1500,7 @@ bool Corth::lex(Program &program)
             }
 
             i--; // Undo lookahead.
-            PushToken(toks, tok);
+            Sparrow::pushToken(toks, tok);
         }
 
         else if (current == '"')
@@ -1542,13 +1542,13 @@ bool Corth::lex(Program &program)
             }
 
             i--;
-            PushToken(toks, tok);
+            Sparrow::pushToken(toks, tok);
         }
     }
     return true;
 }
 
-void Corth::PrintToken(Token& t)
+void Sparrow::PrintToken(Token& t)
 {
 
     if (t.data.empty())
@@ -1562,7 +1562,7 @@ void Corth::PrintToken(Token& t)
     }
 }
 
-void Corth::PrintTokens(Program& p)
+void Sparrow::PrintTokens(Program& p)
 {
     printf("%s\n", "TOKENS:");
     size_t instr_ptr_max = p.tokens.size();
@@ -1574,7 +1574,7 @@ void Corth::PrintTokens(Program& p)
     }
 }
 
-bool Corth::removableToken(Token& tok)
+bool Sparrow::removableToken(Token& tok)
 {
     if (tok.type == TokenType::WHITESPACE)
     {
@@ -1584,7 +1584,7 @@ bool Corth::removableToken(Token& tok)
     return true;
 }
 
-void Corth::TokenStackError(Token& tok)
+void Sparrow::TokenStackError(Token& tok)
 {
     // This token could cause serious memory issues (by popping a value off the stack that doesn't exist)
     // It is marked for removal by setting it's type to whitespace.
@@ -1593,7 +1593,7 @@ void Corth::TokenStackError(Token& tok)
     StackError(tok.line_number, tok.col_number);
 }
 
-void Corth::validateTokens_stack(Program &prog)
+void Sparrow::validateTokens_stack(Program &prog)
 {
     std::vector<Token>& toks = prog.tokens;
 
@@ -1649,10 +1649,23 @@ void Corth::validateTokens_stack(Program &prog)
                     TokenStackError(tok);
                 }
             }
+            // Operators that pop one value off the stack and return zero to it
+            else if(tok.text == "#")
+            {
+				if (stackSize > 0)
+                {
+					stackSize--;
+				}
+
+                else
+                {
+					TokenStackError(tok);
+				}
+            }
         }
         else if(tok.type == TokenType::KEYWORD)
         {
-            static_assert(KEYWORD_COUNT == 28, "Exhaustive handling of keywords in ValidateTokens_Stack");
+            static_assert(static_cast<int>(Keyword::COUNT) == 28, "Exhaustive handling of keywords in ValidateTokens_Stack");
 
             // Skip skippable tokens first? For Speed?
             if(tok.text == getKeywordStr(Keyword::ELSE)
@@ -1694,7 +1707,7 @@ void Corth::validateTokens_stack(Program &prog)
             }
 
             // dup will pop from the stack then push that value back twice
-            else if(tok.text == getKeywordStr(keyword::TWODUP))
+            else if(tok.text == getKeywordStr(Keyword::TWODUP))
             {
                 if (stackSize > 1)
                 {
@@ -1709,7 +1722,7 @@ void Corth::validateTokens_stack(Program &prog)
 
             // `mem` will push the address of usable memory onto the stack
             // { } -> {<memory address>}
-            else if (tok.text == GetKeywordStr(Keyword::MEM))
+            else if (tok.text == getKeywordStr(Keyword::MEM))
             {
                 stackSize++;
             }
@@ -1787,15 +1800,15 @@ void Corth::validateTokens_stack(Program &prog)
             // {a, b} -> {a, b, a}
             else if(tok.text == getKeywordStr(Keyword::OVER))
             {
-              if (stackSize > 1)
-              {
-                  stackSize++;
-              }
+                if (stackSize > 1)
+                {
+                    stackSize++;
+                }
 
-              else
-              {
-                  TokenStackError(tok);
-              }
+                else
+                {
+                    TokenStackError(tok);
+                }
             }
 
             // Bitwise-shift left and right, bitwise-or and bitwise-and, as well as modulo will pop two
@@ -1829,7 +1842,7 @@ void Corth::validateTokens_stack(Program &prog)
     }
 }
 
-bool Corth::validateBlock(Program& prog, size_t& instr_ptr, size_t instr_ptr_max)
+bool Sparrow::validateBlock(Program& prog, size_t& instr_ptr, size_t instr_ptr_max)
 {
     // Assume that current token at instruction pointer is an `if`, `else`, `do`, or `while`
     size_t block_instr_ptr = instr_ptr;
@@ -1897,7 +1910,7 @@ bool Corth::validateBlock(Program& prog, size_t& instr_ptr, size_t instr_ptr_max
                         getKeywordStr(Keyword::IF) + "` block(s)", prog.tokens[instr_ptr].line_number,
                         prog.tokens[instr_ptr].col_number);
 
-                    retur false;
+                    return false;
                 }
             }
 
@@ -1946,7 +1959,7 @@ bool Corth::validateBlock(Program& prog, size_t& instr_ptr, size_t instr_ptr_max
     return false;
 }
 
-void Corth::validateTokens_blocks(Program &prog)
+void Sparrow::validateTokens_blocks(Program &prog)
 {
     static_assert(static_cast<int>(Keyword::COUNT) == 28,
             "Exhaustive handling of keywords in ValidateTokens_Blocks. Keep in mind not all tokens form blocks");
@@ -1965,7 +1978,7 @@ void Corth::validateTokens_blocks(Program &prog)
     }
 }
 
-void Corth::validateTokens(Program &prog)
+void Sparrow::validateTokens(Program &prog)
 {
     // Stack Protection
     validateTokens_stack(prog);
@@ -1976,13 +1989,13 @@ void Corth::validateTokens(Program &prog)
     // Remove un-necessary tokens
     static_cast<void>(std::remove_if(prog.tokens.begin(), prog.tokens.end(), removableToken));
 
-    if (verbose_logging)
+    if (verboseLogging)
     {
         Log("Tokens validated");
     }
 }
 
-bool Corth::fileExists(const std::string& filepath)
+bool Sparrow::fileExists(const std::string& filepath)
 {
     std::ifstream file(filepath);
 
@@ -2016,23 +2029,23 @@ bool Corth::fileExists(const std::string& filepath)
     std::string path_var_str(buf[0], buf_sz);
     std::stringstream path_var_ss(path_var_str);
 
-    while (std::getline(path_var_ss, tmp, ';'))
+    while (std::getline(path_var_ss, temp, ';'))
     {
-        if (tmp.back() != '\\' || tmp.back() != '/')
+        if (temp.back() != '\\' || temp.back() != '/')
         {
-            tmp.append(1, '/');
+            temp.append(1, '/');
         }
 
-        path_var.push_back(tmp);
+        path_var.push_back(temp);
     }
 
     // Check each path in Windows PATH variable if file exists
     for (auto& path : path_var)
     {
-        std::string test(path + filePath);
-        if (Corth::verboseLogging)
+        std::string test(path + filepath);
+        if (Sparrow::verboseLogging)
         {
-            Corth::Log("Testing " + test);
+            Sparrow::Log("Testing " + test);
         }
 
         std::ifstream f(test);
@@ -2047,7 +2060,7 @@ bool Corth::fileExists(const std::string& filepath)
 }
 
 // Load a file into a string from a path.
-std::string Corth::loadFromFile(const std::string& filePath)
+std::string Sparrow::loadFromFile(const std::string& filePath)
 {
     std::ifstream inFileStream(filePath);
     if (!inFileStream)
@@ -2057,7 +2070,7 @@ std::string Corth::loadFromFile(const std::string& filePath)
     return std::string(std::istreambuf_iterator<char>(inFileStream), std::istreambuf_iterator<char>());
 }
 
-void Corth::printCharactersFromFile(std::string filePath, std::string logPrefix = "[LOG]")
+void Sparrow::printCharactersFromFile(std::string filePath, std::string logPrefix = "[LOG]")
 {
     FILE* file_ptr {nullptr};
     char c;
