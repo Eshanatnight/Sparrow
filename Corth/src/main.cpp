@@ -1,147 +1,147 @@
-#include "Corth.h"
+#include "Sparrow.h"
 
 int main(int argc, char** argv)
 {
     // PLATFORM SPECIFIC DEFAULTS
     // Defaults assume tools are the same directory as the "copmiler" on the same drive.
-    Corth::ASMB_PATH = "\\NASM\\nasm.exe";
-    Corth::ASMB_OPTS = "-f win64";
-    Corth::LINK_PATH = "\\Golink\\golink.exe";
-    Corth::LINK_OPTS = "/console /ENTRY:main msvcrt.dll";
+    Sparrow::ASMB_PATH = "\\NASM\\nasm.exe";
+    Sparrow::ASMB_OPTS = "-f win64";
+    Sparrow::LINK_PATH = "\\Golink\\golink.exe";
+    Sparrow::LINK_OPTS = "/console /ENTRY:main msvcrt.dll";
 
     // Non-graceful handling of command line arguments, abort execution.
     // Probably should refactor the function to work gracefully.
-    if (!Corth::handleCommandLineArgs(argc, argv))
+    if (!Sparrow::handleCommandLineArgs(argc, argv))
     {
         return -1;
     }
 
-    Corth::Program prog;
-    static_assert(static_cast<int>(Corth::MODE::COUNT) == 2, "Exhaustive handling of modes in main method");
-    static_assert(static_cast<int>(Corth::PLATFORM::COUNT) == 1, "Exhaustive handling of platforms in main method");
-    static_assert(static_cast<int>(Corth::ASM_SYNTAX::COUNT) == 2, "Exhaustive handling of asm syntax in main method");
+    Sparrow::Program prog;
+    static_assert(static_cast<int>(Sparrow::MODE::COUNT) == 2, "Exhaustive handling of modes in main method");
+    static_assert(static_cast<int>(Sparrow::PLATFORM::COUNT) == 1, "Exhaustive handling of platforms in main method");
+    static_assert(static_cast<int>(Sparrow::ASM_SYNTAX::COUNT) == 2, "Exhaustive handling of asm syntax in main method");
 
     // Try to load program source from a file
     try
     {
-        prog.source = loadFromFile(Corth::SOURCE_FILE);
-        if(Corth::verboseLogging)
+        prog.source = Sparrow::loadFromFile(Sparrow::SOURCE_PATH);
+        if(Sparrow::verboseLogging)
         {
-            Corth::Log("Load File: Successful");
+            Sparrow::Log("Load File: Successful");
         }
     }
     catch(std::runtime_error e)
     {
-        Corth::Error("Could not load file: " + std::string(e.what()));
+        Sparrow::Error("Could not load file: " + std::string(e.what()));
         return -1;
     }
 
     catch (...)
     {
-        Corth::Error("Could not load file: " + Corth::SOURCE_PATH + "\nUnknown Error: " + std::string(e.what()));
+        Sparrow::Error("Could not load file: " + Sparrow::SOURCE_PATH + "\nUnknown Error: " + std::string(e.what()));
         return -1;
     }
 
 
     // Lex program source into tokens
-    bool lexSuccessful = Corth::lex(prog);
+    bool lexSuccessful = Sparrow::lex(prog);
     if(lexSuccessful)
     {
-        Corth::validateTokens(prog);
-        if(Corth::verboseLogging)
+        Sparrow::validateTokens(prog);
+        if(Sparrow::verboseLogging)
         {
-            Corth::Log("Lexed File in to Tokens: Successful");
-            Corth::PrintTokens(prog);
+            Sparrow::Log("Lexed File in to Tokens: Successful");
+            Sparrow::PrintTokens(prog);
         }
     }
     else
     {
-        Corth::Error("Failure when lexing file into tokens");
+        Sparrow::Error("Failure when lexing file into tokens");
         return -1;
     }
 
-    if(Corth::RUN_MODE == Corth::MODE::GENERATE)
+    if(Sparrow::RUN_MODE == Sparrow::MODE::GENERATE)
     {
-        if(Corth::RUN_PLATFORM == Corth::PLATFORM::WIN)
+        if(Sparrow::RUN_PLATFORM == Sparrow::PLATFORM::WIN)
         {
-            if(Corth::ASSEMBLY_SYNTAX == Corth::ASM_SYNTAX::NASM)
+            if(Sparrow::ASSEMBLY_SYNTAX == Sparrow::ASM_SYNTAX::NASM)
             {
-                Corth::generateAssembly_NASM_win64(prog);
+                Sparrow::generateAssembly_NASM_win64(prog);
             }
-            else if(Corth::ASSEMBLY_SYNTAX == Corth::ASM_SYNTAX::GAS)
+            else if(Sparrow::ASSEMBLY_SYNTAX == Sparrow::ASM_SYNTAX::GAS)
             {
-                Corth::generateAssembly_GAS_win64(prog);
+                Sparrow::generateAssembly_GAS_win64(prog);
             }
             else
             {
-                Corth::Error("Invalid assembly syntax");
+                Sparrow::Error("Invalid assembly syntax");
                 return -1;
             }
         }
     }
 
-    else if(Corth::RUN_MODE == Corth::MODE::COMPILE)
+    else if(Sparrow::RUN_MODE == Sparrow::MODE::COMPILE)
     {
-        if (Corth::RUN_PLATFORM == Corth::PLATFORM::WIN64)
+        if (Sparrow::RUN_PLATFORM == Sparrow::PLATFORM::WIN64)
         {
-            if (Corth::ASSEMBLY_SYNTAX == Corth::ASM_SYNTAX::GAS)
+            if (Sparrow::ASSEMBLY_SYNTAX == Sparrow::ASM_SYNTAX::GAS)
             {
-                Corth::generateAssembly_GAS_win64(prog);
-                if (FileExists(Corth::ASMB_PATH))
+                Sparrow::generateAssembly_GAS_win64(prog);
+                if (FileExists(Sparrow::ASMB_PATH))
                 {
                     /* Construct Commands
-                    Assembly is generated at `Corth::OUTPUT_NAME.s` */
+                    Assembly is generated at `Sparrow::OUTPUT_NAME.s` */
 
-                    std::string cmd_asmb = Corth::ASMB_PATH + " "+ Corth::ASMB_OPTS + " "+ Corth::OUTPUT_NAME + ".s " + ">assembler-log.txt 2>&1";
+                    std::string cmd_asmb = Sparrow::ASMB_PATH + " "+ Sparrow::ASMB_OPTS + " "+ Sparrow::OUTPUT_NAME + ".s " + ">assembler-log.txt 2>&1";
 
                     printf("[CMD]: `%s`\n", cmd_asmb.c_str());
                     if (system(cmd_asmb.c_str()) == 0)
                     {
-                        Corth::Log("Assembler successful!");
+                        Sparrow::Log("Assembler successful!");
                     }
 
                     else
                     {
-                        Corth::Log("Assembler returned non-zero exit code, indicating a failure. "
+                        Sparrow::Log("Assembler returned non-zero exit code, indicating a failure. "
                                    "Check `assembler-log.txt` for the output of the assembler, or enable verbose logging "
                                    "(`-v` flag) to print output to the console.");
                     }
 
-                    if (Corth::verboseLogging)
+                    if (Sparrow::verboseLogging)
                     {
-                        printCharactersFromFile("assembler-log.txt", "Assembler Log");
+                        Sparrow::printCharactersFromFile("assembler-log.txt", "Assembler Log");
                     }
                 }
                 else
                 {
-                    Corth::Error("Assembler not found at " + Corth::ASMB_PATH + "\n");
+                    Sparrow::Error("Assembler not found at " + Sparrow::ASMB_PATH + "\n");
                     return -1;
                 }
             }
-            else if (Corth::ASSEMBLY_SYNTAX == Corth::ASM_SYNTAX::NASM)
+            else if (Sparrow::ASSEMBLY_SYNTAX == Sparrow::ASM_SYNTAX::NASM)
             {
-                Corth::generateAssembly_NASM_win64(prog);
-                if (FileExists(Corth::ASMB_PATH))
+                Sparrow::generateAssembly_NASM_win64(prog);
+                if (Sparrow::fileExists(Sparrow::ASMB_PATH))
                 {
-                    if (FileExists(Corth::LINK_PATH))
+                    if (Sparrow::fileExists(Sparrow::LINK_PATH))
                     {
                         /* Construct Commands
-                        Assembly is generated at `Corth::OUTPUT_NAME.asm`
+                        Assembly is generated at `Sparrow::OUTPUT_NAME.asm`
                         By default on win64, NASM generates an output `.obj` file of the same name as the input file.
-                        This means the linker needs to link to `Corth::OUTPUT_NAME.obj` */
+                        This means the linker needs to link to `Sparrow::OUTPUT_NAME.obj` */
 
-                        std::string cmd_asmb = Corth::ASMB_PATH + " " + Corth::ASMB_OPTS + " " + Corth::OUTPUT_NAME + ".asm " + ">assembler-log.txt 2>&1";
+                        std::string cmd_asmb = Sparrow::ASMB_PATH + " " + Sparrow::ASMB_OPTS + " " + Sparrow::OUTPUT_NAME + ".asm " + ">assembler-log.txt 2>&1";
 
-                        std::string cmd_link = Corth::LINK_PATH + " " + Corth::LINK_OPTS + " " + Corth::OUTPUT_NAME + ".obj " + ">linker-log.txt 2>&1";
+                        std::string cmd_link = Sparrow::LINK_PATH + " " + Sparrow::LINK_OPTS + " " + Sparrow::OUTPUT_NAME + ".obj " + ">linker-log.txt 2>&1";
 
                         printf("[CMD]: `%s`\n", cmd_asmb.c_str());
                         if (system(cmd_asmb.c_str()) == 0)
                         {
-                            Corth::Log("Assembler successful!");
+                            Sparrow::Log("Assembler successful!");
                         }
                         else
                         {
-                            Corth::Log("Assembler returned non-zero exit code, indicating a failure. "
+                            Sparrow::Log("Assembler returned non-zero exit code, indicating a failure. "
                                        "Check `assembler-log.txt` for the output of the assembler, "
                                        "or enable verbose logging (`-v` flag) to print output to the console.");
                         }
@@ -149,33 +149,33 @@ int main(int argc, char** argv)
                         printf("[CMD]: `%s`\n", cmd_link.c_str());
                         if (system(cmd_link.c_str()) == 0)
                         {
-                            Corth::Log("Linker successful!");
+                            Sparrow::Log("Linker successful!");
                         }
 
                         else
                         {
-                            Corth::Log("Linker returned non-zero exit code, indicating a failure. "
+                            Sparrow::Log("Linker returned non-zero exit code, indicating a failure. "
                                        "Check `linker-log.txt` for the output of the linker, "
                                        "or enable verbose logging (`-v` flag) to print output to the console.");
                         }
 
-                        if (Corth::verboseLogging)
+                        if (Sparrow::verboseLogging)
                         {
-                            printCharactersFromFile("assembler-log.txt", "Assembler Log");
-                            printCharactersFromFile("linker-log.txt", "Linker Log");
+                            Sparrow::printCharactersFromFile("assembler-log.txt", "Assembler Log");
+                            Sparrow::printCharactersFromFile("linker-log.txt", "Linker Log");
                         }
                     }
 
                     else
                     {
-                        Corth::Error("Linker not found at " + Corth::LINK_PATH + "\n");
+                        Sparrow::Error("Linker not found at " + Sparrow::LINK_PATH + "\n");
                         return -1;
                     }
                 }
 
                 else
                 {
-                    Corth::Error("Assembler not found at " + Corth::ASMB_PATH + "\n");
+                    Sparrow::Error("Assembler not found at " + Sparrow::ASMB_PATH + "\n");
                     return -1;
                 }
             }
