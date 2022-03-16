@@ -1,4 +1,5 @@
 ﻿#include "Sparrow.h"
+#include "Logging.h"
 #include <fstream>
 #include <algorithm>
 #include <stdlib.h>
@@ -2070,7 +2071,7 @@ std::string Sparrow::loadFromFile(const std::string& filePath)
     return std::string(std::istreambuf_iterator<char>(inFileStream), std::istreambuf_iterator<char>());
 }
 
-void Sparrow::printCharactersFromFile(std::string filePath, std::string logPrefix = "[LOG]")
+void Sparrow::printCharactersFromFile(std::string filePath, std::string logPrefix)
 {
     FILE* file_ptr {nullptr};
     char c;
@@ -2101,3 +2102,11 @@ void Sparrow::printCharactersFromFile(std::string filePath, std::string logPrefi
     }
 }
 
+
+// Check for the
+void Sparrow::staticCheck()
+{
+    static_assert(static_cast<int>(Sparrow::MODE::COUNT) == 2, "Exhaustive handling of modes in main method");
+    static_assert(static_cast<int>(Sparrow::PLATFORM::COUNT) == 1, "Exhaustive handling of platforms in main method");
+    static_assert(static_cast<int>(Sparrow::ASM_SYNTAX::COUNT) == 2, "Exhaustive handling of asm syntax in main method");
+}

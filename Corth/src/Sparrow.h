@@ -41,7 +41,7 @@ namespace Sparrow
     };
 
     //I have not tried this with GAS Assembler yet. So there might be some bugs.
-    // For the GAS Syntax. Look Corth.cpp Line: 694
+    // For the GAS Syntax. Look Sparrow.cpp Line: 694
     ASM_SYNTAX ASSEMBLY_SYNTAX = ASM_SYNTAX::NASM;
 
     bool verboseLogging = false;
@@ -178,4 +178,6 @@ namespace Sparrow
     std::string loadFromFile(const std::string& filepath);
 
     void printCharactersFromFile(std::string filePath, std::string logPrefix = "[LOG]");
+
+    void staticCheck();
 }

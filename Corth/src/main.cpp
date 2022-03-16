@@ -1,4 +1,5 @@
 #include "Sparrow.h"
+#include "Logging.h"
 
 int main(int argc, char** argv)
 {
@@ -17,9 +18,7 @@ int main(int argc, char** argv)
     }
 
     Sparrow::Program prog;
-    static_assert(static_cast<int>(Sparrow::MODE::COUNT) == 2, "Exhaustive handling of modes in main method");
-    static_assert(static_cast<int>(Sparrow::PLATFORM::COUNT) == 1, "Exhaustive handling of platforms in main method");
-    static_assert(static_cast<int>(Sparrow::ASM_SYNTAX::COUNT) == 2, "Exhaustive handling of asm syntax in main method");
+    Sparrow::staticCheck();
 
     // Try to load program source from a file
     try
@@ -38,7 +37,7 @@ int main(int argc, char** argv)
 
     catch (...)
     {
-        Sparrow::Error("Could not load file: " + Sparrow::SOURCE_PATH + "\nUnknown Error: " + std::string(e.what()));
+        Sparrow::Error("Could not load file: " + Sparrow::SOURCE_PATH + "\nUnknown Error");
         return -1;
     }
 
@@ -82,12 +81,12 @@ int main(int argc, char** argv)
 
     else if(Sparrow::RUN_MODE == Sparrow::MODE::COMPILE)
     {
-        if (Sparrow::RUN_PLATFORM == Sparrow::PLATFORM::WIN64)
+        if (Sparrow::RUN_PLATFORM == Sparrow::PLATFORM::WIN)
         {
             if (Sparrow::ASSEMBLY_SYNTAX == Sparrow::ASM_SYNTAX::GAS)
             {
                 Sparrow::generateAssembly_GAS_win64(prog);
-                if (FileExists(Sparrow::ASMB_PATH))
+                if (Sparrow::fileExists(Sparrow::ASMB_PATH))
                 {
                     /* Construct Commands
                     Assembly is generated at `Sparrow::OUTPUT_NAME.s` */
