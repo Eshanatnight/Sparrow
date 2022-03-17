@@ -4,9 +4,10 @@
 #include <algorithm>
 #include <stdlib.h>
 
+
 bool Sparrow::isOperator(char& c)
 {
-    		return c == '+'    // addition
+    		return c == '+' // addition
 			|| c == '-'    // subtraction
 			|| c == '*'    // multiplication
 			|| c == '/'    // division
@@ -651,7 +652,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
             asm_file << "    mov rcx, 0\n"
                     << "    call exit\n\n";
 
-            // DECLARE CORTH CONSTANTS
+            // DECLARE SPARROW CONSTANTS
             asm_file << "    SECTION .data\n"
                     << "    fmt db '%u', 0\n"
                     << "    fmt_char db '%c', 0\n"
@@ -1302,11 +1303,11 @@ bool Sparrow::handleCommandLineArgs(int argc, char **argv)
             // SET PLATFORM SPECIFIC DEFAULTS
             // Defaults assume tools were installed on the default drive as in the installer.
             // Change the Paths to the correct paths that are in the Working Directory.
-            Sparrow::ASMB_PATH = "C:\\Program Files\\NASM\\nasm.exe";
-            Sparrow::ASMB_OPTS = "-f win64";
+            ASMB_PATH = "C:\\Program Files\\NASM\\nasm.exe";
+            ASMB_OPTS = "-f win64";
             // Get Golink in the system
-            Sparrow::LINK_PATH = "\\Golink\\golink.exe";
-            Sparrow::LINK_OPTS = "\\console\\ENTRY:main msvcrt.dll";
+            LINK_PATH = "\\Golink\\golink.exe";
+            LINK_OPTS = "\\console\\ENTRY:main msvcrt.dll";
         }
 
         else if (arg == "-GAS")
@@ -1314,10 +1315,10 @@ bool Sparrow::handleCommandLineArgs(int argc, char **argv)
             ASSEMBLY_SYNTAX = ASM_SYNTAX::GAS;
             // Defaults assume tools were installed on the same drive as Sparrow as well as in the root directory of the drive.
             // TODO: Might need TDM-GCC to be installed
-            Sparrow::ASMB_PATH = "\\TDM-GCC-64\\bin\\gcc.exe";
-            Sparrow::ASMB_OPTS = "-e main";
-            Sparrow::LINK_PATH = "";
-            Sparrow::LINK_OPTS = "";
+            ASMB_PATH = "\\TDM-GCC-64\\bin\\gcc.exe";
+            ASMB_OPTS = "-e main";
+            LINK_PATH = "";
+            LINK_OPTS = "";
 
         }
 
@@ -1587,9 +1588,6 @@ bool Sparrow::removableToken(Token& tok)
 
 void Sparrow::TokenStackError(Token& tok)
 {
-    // This token could cause serious memory issues (by popping a value off the stack that doesn't exist)
-    // It is marked for removal by setting it's type to whitespace.
-    // Might be better to think of a better way to handle this.
     tok.type = TokenType::WHITESPACE;
     StackError(tok.line_number, tok.col_number);
 }
@@ -2044,7 +2042,7 @@ bool Sparrow::fileExists(const std::string& filepath)
     for (auto& path : path_var)
     {
         std::string test(path + filepath);
-        if (Sparrow::verboseLogging)
+        if (verboseLogging)
         {
             Sparrow::Log("Testing " + test);
         }

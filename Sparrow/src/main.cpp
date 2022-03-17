@@ -1,14 +1,28 @@
 #include "Sparrow.h"
 #include "Logging.h"
 
+Sparrow::MODE RUN_MODE = Sparrow::MODE::COMPILE;
+Sparrow::PLATFORM RUN_PLATFORM = Sparrow::PLATFORM::WIN;
+Sparrow::ASM_SYNTAX ASSEMBLY_SYNTAX = Sparrow::ASM_SYNTAX::NASM;
+bool verboseLogging;
+std::string SOURCE_PATH = "main.spar";
+std::string OUTPUT_NAME = "main_sparrow";
+std::string ASMB_PATH = "";
+std::string LINK_PATH = "";
+std::string ASMB_OPTS = "";
+std::string LINK_OPTS = "";
+std::string ASMB_NAME = "";
+std::string LINK_NAME = "";
+
+
 int main(int argc, char** argv)
 {
     // PLATFORM SPECIFIC DEFAULTS
     // Defaults assume tools are the same directory as the "copmiler" on the same drive.
-    Sparrow::ASMB_PATH = "\\NASM\\nasm.exe";
-    Sparrow::ASMB_OPTS = "-f win64";
-    Sparrow::LINK_PATH = "\\Golink\\golink.exe";
-    Sparrow::LINK_OPTS = "/console /ENTRY:main msvcrt.dll";
+    ASMB_PATH = "Assembler\\nasm-2.15.05\\nasm.exe";
+    ASMB_OPTS = "-f win64";
+    LINK_PATH = "Linker\\GoLink\\GoLink.exe";
+    LINK_OPTS = "/console /ENTRY:main msvcrt.dll";
 
     // Non-graceful handling of command line arguments, abort execution.
     // Probably should refactor the function to work gracefully.
@@ -19,12 +33,11 @@ int main(int argc, char** argv)
 
     Sparrow::Program prog;
     Sparrow::staticCheck();
-
     // Try to load program source from a file
     try
     {
-        prog.source = Sparrow::loadFromFile(Sparrow::SOURCE_PATH);
-        if(Sparrow::verboseLogging)
+        prog.source = Sparrow::loadFromFile(SOURCE_PATH);
+        if(verboseLogging)
         {
             Sparrow::Log("Load File: Successful");
         }
@@ -37,7 +50,7 @@ int main(int argc, char** argv)
 
     catch (...)
     {
-        Sparrow::Error("Could not load file: " + Sparrow::SOURCE_PATH + "\nUnknown Error");
+        Sparrow::Error("Could not load file: " + SOURCE_PATH + "\nUnknown Error");
         return -1;
     }
 
@@ -47,7 +60,7 @@ int main(int argc, char** argv)
     if(lexSuccessful)
     {
         Sparrow::validateTokens(prog);
-        if(Sparrow::verboseLogging)
+        if(verboseLogging)
         {
             Sparrow::Log("Lexed File in to Tokens: Successful");
             Sparrow::PrintTokens(prog);
@@ -59,15 +72,16 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    if(Sparrow::RUN_MODE == Sparrow::MODE::GENERATE)
+    if(RUN_MODE == Sparrow::MODE::GENERATE)
     {
-        if(Sparrow::RUN_PLATFORM == Sparrow::PLATFORM::WIN)
+        if(RUN_PLATFORM == Sparrow::PLATFORM::WIN)
         {
-            if(Sparrow::ASSEMBLY_SYNTAX == Sparrow::ASM_SYNTAX::NASM)
+            if(ASSEMBLY_SYNTAX == Sparrow::ASM_SYNTAX::NASM)
             {
                 Sparrow::generateAssembly_NASM_win64(prog);
             }
-            else if(Sparrow::ASSEMBLY_SYNTAX == Sparrow::ASM_SYNTAX::GAS)
+
+            else if(ASSEMBLY_SYNTAX == Sparrow::ASM_SYNTAX::GAS)
             {
                 Sparrow::generateAssembly_GAS_win64(prog);
             }
@@ -79,19 +93,19 @@ int main(int argc, char** argv)
         }
     }
 
-    else if(Sparrow::RUN_MODE == Sparrow::MODE::COMPILE)
+    else if(RUN_MODE == Sparrow::MODE::COMPILE)
     {
-        if (Sparrow::RUN_PLATFORM == Sparrow::PLATFORM::WIN)
+        if (RUN_PLATFORM == Sparrow::PLATFORM::WIN)
         {
-            if (Sparrow::ASSEMBLY_SYNTAX == Sparrow::ASM_SYNTAX::GAS)
+            if (ASSEMBLY_SYNTAX == Sparrow::ASM_SYNTAX::GAS)
             {
                 Sparrow::generateAssembly_GAS_win64(prog);
-                if (Sparrow::fileExists(Sparrow::ASMB_PATH))
+                if (Sparrow::fileExists(ASMB_PATH))
                 {
                     /* Construct Commands
                     Assembly is generated at `Sparrow::OUTPUT_NAME.s` */
 
-                    std::string cmd_asmb = Sparrow::ASMB_PATH + " "+ Sparrow::ASMB_OPTS + " "+ Sparrow::OUTPUT_NAME + ".s " + ">assembler-log.txt 2>&1";
+                    std::string cmd_asmb = ASMB_PATH + " "+ ASMB_OPTS + " "+ OUTPUT_NAME + ".s " + ">assembler-log.txt 2>&1";
 
                     printf("[CMD]: `%s`\n", cmd_asmb.c_str());
                     if (system(cmd_asmb.c_str()) == 0)
@@ -106,32 +120,33 @@ int main(int argc, char** argv)
                                    "(`-v` flag) to print output to the console.");
                     }
 
-                    if (Sparrow::verboseLogging)
+                    if (verboseLogging)
                     {
                         Sparrow::printCharactersFromFile("assembler-log.txt", "Assembler Log");
                     }
                 }
                 else
                 {
-                    Sparrow::Error("Assembler not found at " + Sparrow::ASMB_PATH + "\n");
+                    Sparrow::Error("Assembler not found at " + ASMB_PATH + "\n");
                     return -1;
                 }
             }
-            else if (Sparrow::ASSEMBLY_SYNTAX == Sparrow::ASM_SYNTAX::NASM)
+            else if (ASSEMBLY_SYNTAX == Sparrow::ASM_SYNTAX::NASM)
             {
                 Sparrow::generateAssembly_NASM_win64(prog);
-                if (Sparrow::fileExists(Sparrow::ASMB_PATH))
+                if (Sparrow::fileExists(ASMB_PATH))
                 {
-                    if (Sparrow::fileExists(Sparrow::LINK_PATH))
+                    if (Sparrow::fileExists(LINK_PATH))
                     {
                         /* Construct Commands
                         Assembly is generated at `Sparrow::OUTPUT_NAME.asm`
                         By default on win64, NASM generates an output `.obj` file of the same name as the input file.
-                        This means the linker needs to link to `Sparrow::OUTPUT_NAME.obj` */
+                        This means the linker needs to link to `Sparrow::OUTPUT_NAME.obj`
+                         */
 
-                        std::string cmd_asmb = Sparrow::ASMB_PATH + " " + Sparrow::ASMB_OPTS + " " + Sparrow::OUTPUT_NAME + ".asm " + ">assembler-log.txt 2>&1";
+                        std::string cmd_asmb = ASMB_PATH + " " + ASMB_OPTS + " " + OUTPUT_NAME + ".asm " + ">assembler-log.txt 2>&1";
 
-                        std::string cmd_link = Sparrow::LINK_PATH + " " + Sparrow::LINK_OPTS + " " + Sparrow::OUTPUT_NAME + ".obj " + ">linker-log.txt 2>&1";
+                        std::string cmd_link = LINK_PATH + " " + LINK_OPTS + " " + OUTPUT_NAME + ".obj " + ">linker-log.txt 2>&1";
 
                         printf("[CMD]: `%s`\n", cmd_asmb.c_str());
                         if (system(cmd_asmb.c_str()) == 0)
@@ -158,7 +173,7 @@ int main(int argc, char** argv)
                                        "or enable verbose logging (`-v` flag) to print output to the console.");
                         }
 
-                        if (Sparrow::verboseLogging)
+                        if (verboseLogging)
                         {
                             Sparrow::printCharactersFromFile("assembler-log.txt", "Assembler Log");
                             Sparrow::printCharactersFromFile("linker-log.txt", "Linker Log");
@@ -167,14 +182,14 @@ int main(int argc, char** argv)
 
                     else
                     {
-                        Sparrow::Error("Linker not found at " + Sparrow::LINK_PATH + "\n");
+                        Sparrow::Error("Linker not found at " + LINK_PATH + "\n");
                         return -1;
                     }
                 }
 
                 else
                 {
-                    Sparrow::Error("Assembler not found at " + Sparrow::ASMB_PATH + "\n");
+                    Sparrow::Error("Assembler not found at " + ASMB_PATH + "\n");
                     return -1;
                 }
             }
