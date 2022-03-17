@@ -5,4 +5,4 @@ cmake_minimum_required (VERSION 3.8)
 project ("Sparrow")
 
 # Include sub-projects.
-add_subdirectory ("Corth")
+add_subdirectory ("Sparrow")
