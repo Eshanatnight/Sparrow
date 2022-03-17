@@ -2,7 +2,8 @@
 /.idea
 /.vs
 /.vscode
-/Corth.code-workspace
+/Sparrow.code-workspace
+/CmakeSettings.json
 
 # Build Files and Folders
 /out
