@@ -220,6 +220,10 @@ namespace Sparrow
 
     std::string loadFromFile(const std::string& filepath);
 
+    // Uses fopen_s
+    void printCharactersFromFile__fopen_s(const std::string& filePath, const std::string logPrefix);
+
+    // Uses depricated fopen
     void printCharactersFromFile(std::string filePath, std::string logPrefix = "[LOG]");
 
     void staticCheck();

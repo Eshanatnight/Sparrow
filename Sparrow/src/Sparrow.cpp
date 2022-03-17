@@ -2069,6 +2069,36 @@ std::string Sparrow::loadFromFile(const std::string& filePath)
     return std::string(std::istreambuf_iterator<char>(inFileStream), std::istreambuf_iterator<char>());
 }
 
+void Sparrow::printCharactersFromFile__fopen_s(const std::string& filePath, const std::string logPrefix)
+{
+    FILE* fstream = nullptr;
+    char c;
+
+    if (fopen_s(&fstream, filePath.c_str(), "r") == 0)
+    {
+        // Don't print if log-file is empty
+        fseek(fstream, 0, SEEK_END);
+
+        if (ftell(fstream) != 0)
+        {
+            printf("%c", '\n');
+
+            // Navigate back to beginning of file
+            fseek(fstream, 0, SEEK_SET);
+            printf("%s (%s):\n", logPrefix.c_str(), filePath.c_str());
+
+            c = fgetc(fstream);
+
+            while (c != EOF)
+            {
+                printf("%c", c);
+                c = fgetc(fstream);
+            }
+        }
+        fclose(fstream);
+    }
+}
+
 void Sparrow::printCharactersFromFile(std::string filePath, std::string logPrefix)
 {
     FILE* file_ptr {nullptr};

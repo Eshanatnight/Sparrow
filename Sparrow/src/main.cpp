@@ -122,7 +122,7 @@ int main(int argc, char** argv)
 
                     if (verboseLogging)
                     {
-                        Sparrow::printCharactersFromFile("assembler-log.txt", "Assembler Log");
+                        Sparrow::printCharactersFromFile__fopen_s("assembler-log.txt", "Assembler Log");
                     }
                 }
                 else
@@ -175,8 +175,8 @@ int main(int argc, char** argv)
 
                         if (verboseLogging)
                         {
-                            Sparrow::printCharactersFromFile("assembler-log.txt", "Assembler Log");
-                            Sparrow::printCharactersFromFile("linker-log.txt", "Linker Log");
+                            Sparrow::printCharactersFromFile__fopen_s("assembler-log.txt", "Assembler Log");
+                            Sparrow::printCharactersFromFile__fopen_s("linker-log.txt", "Linker Log");
                         }
                     }
 
