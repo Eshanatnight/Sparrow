@@ -2,8 +2,7 @@
 /.idea
 /.vs
 /.vscode
-/Sparrow.code-workspace
-/CmakeSettings.json
+
 
 # Build Files and Folders
 /out
@@ -14,6 +13,5 @@
 /cmake-build-release
 /cmake-build-debug-visual-studio
 
-# File I am Using to keep track of the current version of the project
-.readme
-/examples
+# Executables
+Sparrow.exe
