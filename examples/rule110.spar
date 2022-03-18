@@ -1,0 +1,70 @@
+// Triangle side length (stored at mem[9900] thru mem[9908])
+//          |
+//          V
+mem 9900 +  300  storeq
+
+// Initialize column pattern
+// The column pattern is simply a condition for each
+//   column that is being drawn, in the form of a bit.
+// It is updated throughout runtime, causing the fancy drawing
+//   you see in the output to appear.
+// Example pattern: 11000010
+// Example output:  **    * 
+
+// Build initial table
+//   Store a `1` at the first byte of memory
+mem 1                    + 1 storeb
+//   Store a `1` at (amount of columns - 1) in memory
+mem mem 9900 + loadq 1 - + 1 storeb
+
+// Construct end of string in memory
+mem mem 9900 + loadq + 10000 +     10 storeb // newline
+mem mem 9900 + loadq + 10000 + 1 +  0 storeb // null terminator
+
+0 // Loop over lines
+while dup mem 9900 + loadq < do
+  // Load Pattern
+  mem loadb 1 << mem 1 + loadb or
+  // Loop over columns, shift pattern
+  mem 9900 + loadq 2 -
+  while dup 3 > do
+    1 -
+    // Pattern to top of stack, ((pattern << 1) && 7)
+  	swap 1 << 7 and
+	// Copy index to top of stack, load value at memory address + index
+	over mem + loadb or
+	// Duplicate index + pattern
+	twodup
+	// ((110 >> pattern) && 1)
+	110 swap >> 1 and
+	// Swap duped index and pattern
+	swap
+	// Write new pattern to memory
+	mem + swap storeb
+	// Swap pattern and index for loop increment
+	swap
+  endwhile
+  drop drop
+
+  0 // Loop over columns, construct string from pattern at mem[10000]
+  while dup mem 9900 + loadq < do
+    // Test pattern to set current character to write to string.
+    dup mem + loadb if
+	  // Load a '*' into current character within string memory
+	  dup mem + 10000 + 42 storeb
+	else
+	  // Load a ' ' into current character within string memory
+	  dup mem + 10000 + 32 storeb
+	endif
+
+    1 +
+  endwhile
+  drop
+
+  // Print constructed string
+  mem 10000 + dump_s
+  
+  // Increment line counter
+  1 +
+endwhile
+drop
