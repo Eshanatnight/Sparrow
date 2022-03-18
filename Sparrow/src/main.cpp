@@ -5,8 +5,8 @@ Sparrow::MODE RUN_MODE = Sparrow::MODE::COMPILE;
 Sparrow::PLATFORM RUN_PLATFORM = Sparrow::PLATFORM::WIN;
 Sparrow::ASM_SYNTAX ASSEMBLY_SYNTAX = Sparrow::ASM_SYNTAX::NASM;
 bool verboseLogging;
-std::string SOURCE_PATH = "main.spar";
-std::string OUTPUT_NAME = "main_sparrow";
+std::string SOURCE_PATH = "";
+std::string OUTPUT_NAME = "";
 std::string ASMB_PATH = "";
 std::string LINK_PATH = "";
 std::string ASMB_OPTS = "";
@@ -24,6 +24,7 @@ int main(int argc, char** argv)
     LINK_PATH = "Linker\\GoLink\\GoLink.exe";
     LINK_OPTS = "/console /ENTRY:main msvcrt.dll";
 
+
     // Non-graceful handling of command line arguments, abort execution.
     // Probably should refactor the function to work gracefully.
     if (!Sparrow::handleCommandLineArgs(argc, argv))
@@ -33,9 +34,14 @@ int main(int argc, char** argv)
 
     Sparrow::Program prog;
     Sparrow::staticCheck();
+
+    // ! Some how the Source Path is getting courrupted. So had to create this function to fix it.
+    SOURCE_PATH = Sparrow::getSourceFile(argc, argv);
+
     // Try to load program source from a file
     try
     {
+        printf("\nSOURCE_PATH: %s\n", SOURCE_PATH.c_str());
         prog.source = Sparrow::loadFromFile(SOURCE_PATH);
         if(verboseLogging)
         {

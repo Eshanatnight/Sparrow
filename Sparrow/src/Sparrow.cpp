@@ -146,7 +146,7 @@ Sparrow::Token::Token()
 
 void Sparrow::printUseage()
 {
-printf("\n%s\n", "Usage: `Sparrow.exe <flags> <options> Path/To/File.corth`");
+printf("\n%s\n", "Usage: `Sparrow.exe <flags> <options> Path/To/File.spar`");
         printf("    %s\n", "Flags:");
         printf("        %s\n", "-win, -win64             | (default) Generate assembly for Windows 64-bit. If no platform is specified, this is the default.");
         printf("        %s\n", "-com, --compile          | (default) Compile program from source into executable");
@@ -1165,7 +1165,13 @@ bool Sparrow::handleCommandLineArgs(int argc, char **argv)
     {
         std::string arg = argv[i];
 
-        if (arg == "-v" || arg == "--verbose")
+        if(arg == "-h" || arg == "--help")
+        {
+            printUseage();
+            return false;
+        }
+
+        else if (arg == "-v" || arg == "--verbose")
         {
             Log("Verbose mode enabled.");
             verboseLogging = true;
@@ -1176,7 +1182,7 @@ bool Sparrow::handleCommandLineArgs(int argc, char **argv)
             if(i + 1 < argc)
             {
                 ++i;
-                OUTPUT_NAME= argv[i];
+                OUTPUT_NAME = argv[i];
             }
 
             else
@@ -1303,10 +1309,10 @@ bool Sparrow::handleCommandLineArgs(int argc, char **argv)
             // SET PLATFORM SPECIFIC DEFAULTS
             // Defaults assume tools were installed on the default drive as in the installer.
             // Change the Paths to the correct paths that are in the Working Directory.
-            ASMB_PATH = "C:\\Program Files\\NASM\\nasm.exe";
+            ASMB_PATH = "Assembler\\nasm-2.15.05\\nasm.exe";
             ASMB_OPTS = "-f win64";
             // Get Golink in the system
-            LINK_PATH = "\\Golink\\golink.exe";
+            LINK_PATH = "Linker\\GoLink\\GoLink.exe";
             LINK_OPTS = "\\console\\ENTRY:main msvcrt.dll";
         }
 
@@ -1326,6 +1332,7 @@ bool Sparrow::handleCommandLineArgs(int argc, char **argv)
         {
             SOURCE_PATH = arg[i];
         }
+
     }
 
     if(SOURCE_PATH.empty())
@@ -2137,4 +2144,26 @@ void Sparrow::staticCheck()
     static_assert(static_cast<int>(Sparrow::MODE::COUNT) == 2, "Exhaustive handling of modes in main method");
     static_assert(static_cast<int>(Sparrow::PLATFORM::COUNT) == 1, "Exhaustive handling of platforms in main method");
     static_assert(static_cast<int>(Sparrow::ASM_SYNTAX::COUNT) == 2, "Exhaustive handling of asm syntax in main method");
+}
+
+inline bool ends_with(std::string const & value, std::string const & ending)
+{
+    if (ending.size() > value.size()) return false;
+    return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
+}
+
+std::string Sparrow::getSourceFile(int argc, char** argv)
+{
+    std::string filePath;
+
+    for(int i = 1; i < argc; i++)
+    {
+        if(ends_with(argv[i], ".spar"))
+        {
+            filePath = argv[i];
+            break;
+        }
+    }
+
+    return filePath;
 }

@@ -227,6 +227,7 @@ namespace Sparrow
     void printCharactersFromFile(std::string filePath, std::string logPrefix = "[LOG]");
 
     void staticCheck();
+    std::string getSourceFile(int argc, char** argv);
 }
 
 
