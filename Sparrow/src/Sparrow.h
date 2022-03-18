@@ -82,6 +82,14 @@ namespace Sparrow
         OR,
         AND,
 		MOD,
+        OPEN_FILE,
+        WRITE_TO_FILE,
+        CLOSE_FILE,
+        LENGTH_S,
+        WRITE,
+        WRITE_PLUS,
+        APPEND,
+        APPEND_PLUS,
         COUNT
     };
 

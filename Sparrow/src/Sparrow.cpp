@@ -22,7 +22,7 @@ bool Sparrow::isOperator(char& c)
 
 bool Sparrow::isKeyword(std::string& word)
 {
-    static_assert(static_cast<int>(Keyword::COUNT) == 28, "Exhaustive handling of keywords in iskeyword");
+    static_assert(static_cast<int>(Keyword::COUNT) == 36, "Exhaustive handling of keywords in iskeyword");
 
         if (word == "if"
         || word == "else"
@@ -60,7 +60,7 @@ bool Sparrow::isKeyword(std::string& word)
 
 std::string Sparrow::getKeywordStr(Keyword word)
 {
-    static_assert(static_cast<int>(Keyword::COUNT) == 28, "Exhaustive handling of keywords in getKeywordStr Function");
+    static_assert(static_cast<int>(Keyword::COUNT) == 36, "Exhaustive handling of keywords in getKeywordStr Function");
 
     switch(word)
     {
@@ -168,19 +168,9 @@ printf("\n%s\n", "Usage: `Sparrow.exe <flags> <options> Path/To/File.spar`");
 
 std::vector<std::string> Sparrow::stringToHex(const std::string& input)
 {
-    static const char hexDegits[] = "0123456789abcdef";
+    static const char hex_digits[] = "0123456789abcdef";
 
     std::vector<std::string> output;
-    for(unsigned char c : input)
-    {
-        std::string hex;
-        hex += hexDegits[(c & 0xF0) >> 4];
-        hex += hexDegits[c & 0x0F];
-        output.push_back(hex);
-    }
-
-    /*
-    // More readable way
     for (unsigned char c : input)
     {
         std::string hex;
@@ -189,7 +179,6 @@ std::vector<std::string> Sparrow::stringToHex(const std::string& input)
         hex.push_back(hex_digits[c & 15]);
         output.push_back(hex);
     }
-    */
 
     // Problems with escape characters
     // \n, \t \r would get converted in to 2 hex characters
@@ -248,20 +237,28 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
             std::vector<std::string> string_literals;
 
             // WRITE HEADER TO ASM FILE
-            asm_file << "    ;; CORTH COMPILER GENERATED THIS ASSEMBLY\n"
+            asm_file << "    ;; Sparrow COMPILER GENERATED THIS ASSEMBLY -- (BY LENSOR RADII)\n"
                     << "    ;; USING `WINDOWS x64` CALLING CONVENTION (RCX, RDX, R8, R9, ETC)\n"
                     << "    SECTION .text\n"
                     << "    ;; DEFINE EXTERNAL C RUNTIME SYMBOLS (LINK AGAINST MSVCRT.DLL)\n"
                     << "    extern printf\n"
+                    << "    extern fopen\n"
+                    << "    extern fwrite\n"
+                    << "    extern fclose\n"
+                    << "    extern strlen\n"
                     << "    extern exit\n"
                     << "\n"
                     << "    global main\n"
                     << "main:\n";
 
             // WRITE TOKENS TO ASM FILE MAIN LABEL
-            static_assert(static_cast<int>(TokenType::COUNT) == 5, "Exhaustive handling of token types in GenerateAssembly_NASM_win64");
+            static_assert(static_cast<int>(TokenType::COUNT) == 5,
+                "Exhaustive handling of token types in GenerateAssembly_NASM_win64");
+
             size_t instr_ptr = 0;
+
             size_t instr_ptr_max = prog.tokens.size();
+
             while (instr_ptr < instr_ptr_max)
             {
                 Token& tok = prog.tokens[instr_ptr];
@@ -271,6 +268,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                             << "    mov rax, " << tok.text << "\n"
                             << "    push rax\n";
                 }
+
                 else if (tok.type == TokenType::STRING)
                 {
                     asm_file << "    ;; -- push STRING --\n"
@@ -278,9 +276,12 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                             << "    push rax\n";
                     string_literals.push_back(tok.text);
                 }
+
                 else if (tok.type == TokenType::OP)
                 {
-                    static_assert(OP_COUNT == 15, "Exhaustive handling of operators in GenerateAssembly_NASM_win64");
+                    static_assert(OP_COUNT == 15,
+						"Exhaustive handling of operators in GenerateAssembly_NASM_win64");
+
                     if (tok.text == "+")
                     {
                         asm_file << "    ;; -- add --\n"
@@ -289,6 +290,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    add rax, rbx\n"
                                 << "    push rax\n";
                     }
+
                     else if (tok.text == "-")
                     {
                         asm_file << "    ;; -- subtract --\n"
@@ -297,6 +299,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    sub rax, rbx\n"
                                 << "    push rax\n";
                     }
+
                     else if (tok.text == "*")
                     {
                         asm_file << "    ;; -- multiply --\n"
@@ -305,6 +308,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    mul rbx\n"
                                 << "    push rax\n";
                     }
+
                     else if (tok.text == "/")
                     {
                         asm_file << "    ;; -- divide --\n"
@@ -314,6 +318,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    div rbx\n"
                                 << "    push rax\n";
                     }
+
 					else if (tok.text == "%")
                     {
                         asm_file << "    ;; -- modulo --\n"
@@ -323,6 +328,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    div rbx\n"
                                 << "    push rdx\n";
                     }
+
                     else if (tok.text == "=")
                     {
                         asm_file << "    ;; -- equality condition --\n"
@@ -334,6 +340,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    cmove rcx, rdx\n"
                                 << "    push rcx\n";
                     }
+
                     else if (tok.text == "<")
                     {
                         asm_file << "    ;; -- less than condition --\n"
@@ -345,6 +352,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    cmovl rcx, rdx\n"
                                 << "    push rcx\n";
                     }
+
                     else if (tok.text == ">")
                     {
                         asm_file << "    ;; -- greater than condition --\n"
@@ -356,6 +364,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    cmovg rcx, rdx\n"
                                 << "    push rcx\n";
                     }
+
                     else if (tok.text == "<=")
                     {
                         asm_file << "    ;; -- less than or equal condition --\n"
@@ -367,6 +376,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    cmovle rcx, rdx\n"
                                 << "    push rcx\n";
                     }
+
                     else if (tok.text == ">=")
                     {
                         asm_file << "    ;; -- greater than or equal condition --\n"
@@ -378,6 +388,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    cmovge rcx, rdx\n"
                                 << "    push rcx\n";
                     }
+
                     else if (tok.text == "<<")
                     {
                         asm_file << "    ;; -- bitwise-shift left --\n"
@@ -386,6 +397,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    shl rbx, cl\n"
                                 << "    push rbx";
                     }
+
                     else if (tok.text == ">>")
                     {
                         asm_file << "    ;; -- bitwise-shift right --\n"
@@ -394,6 +406,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    shr rbx, cl\n"
                                 << "    push rbx";
                     }
+
                     else if (tok.text == "||")
                     {
                         asm_file << "    ;; -- bitwise or --\n"
@@ -402,6 +415,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    or rax, rbx\n"
                                 << "    push rax\n";
                     }
+
                     else if (tok.text == "&&")
                     {
                         asm_file << "    ;; -- bitwise and --\n"
@@ -410,23 +424,31 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    and rax, rbx\n"
                                 << "    push rax\n";
                     }
+
                     else if (tok.text == "#")
                     {
-                        // A call in Windows x64 requires shadow space(spill space or home space) on the stack
-                        // It's basically space on the stack the called function will assume to be usable and over-writable
-                        // In Sparrow, a stack-based language, this obviously causes issues if I don't handle it correctly.
+                        // ! Previous `sub rsp, 32` and `add rsp, 32` were wrong?
+                        // A call in Windows x64 requires shadow space on the stack
+                        // This is also called spill space or home space
+                        // It's basically space on the stack the called function
+                        //  will assume to be usable and over-writable
+                        // In Sparrow, a stack-based language, this obviously causes issues
+                        //   if I don't handle it correctly.
                         asm_file << "    ;; -- dump --\n"
                                 << "    lea rcx, [rel fmt]\n"
                                 << "    pop rdx\n"
                                 << "    xor rax, rax\n"
-                                << "    sub rsp, 32\n"
+                                << "    sub rsp, 64\n"
                                 << "    call printf\n"
-                                << "    add rsp, 32\n";
+                                << "    add rsp, 64\n";
                     }
                 }
+
                 else if (tok.type == TokenType::KEYWORD)
                 {
-                    static_assert(static_cast<int>(Keyword::COUNT) == 28, "Exhaustive handling of keywords in GenerateAssembly_NASM_win64");
+                    static_assert(static_cast<int>(Keyword::COUNT) == 36,
+								"Exhaustive handling of keywords in GenerateAssembly_NASM_win64");
+
                     if (tok.text == getKeywordStr(Keyword::IF))
                     {
                         asm_file << "    ;; -- if --\n"
@@ -434,22 +456,26 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    cmp rax, 0\n"
                                 << "    je addr_" << tok.data << "\n";
                     }
+
                     else if (tok.text == getKeywordStr(Keyword::ELSE))
                     {
                         asm_file << "    ;; -- else --\n"
                                 << "    jmp addr_" << tok.data << "\n"
                                 << "addr_" << instr_ptr << ":\n";
                     }
+
                     else if (tok.text == getKeywordStr(Keyword::ENDIF))
                     {
                         asm_file << "    ;; -- endif --\n"
                                 << "addr_" << instr_ptr << ":\n";
                     }
+
                     else if (tok.text == getKeywordStr(Keyword::WHILE))
                     {
                         asm_file << "    ;; -- while --\n"
                                 << "addr_" << instr_ptr << ":\n";
                     }
+
                     else if (tok.text == getKeywordStr(Keyword::DO))
                     {
                         asm_file << "    ;; -- do --\n"
@@ -457,6 +483,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    cmp rax, 0\n"
                                 << "    je addr_" << tok.data << "\n";
                     }
+
                     else if (tok.text == getKeywordStr(Keyword::ENDWHILE))
                     {
                         asm_file << "    ;; -- endwhile --\n"
@@ -471,6 +498,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    push rax\n"
                                 << "    push rax\n";
                     }
+
                     else if (tok.text == getKeywordStr(Keyword::TWODUP))
                     {
                         asm_file << "    ;; -- twodup --\n"
@@ -481,11 +509,13 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    push rbx\n"
                                 << "    push rax\n";
                     }
+
                     else if (tok.text == getKeywordStr(Keyword::DROP))
                     {
                         asm_file << "    ;; -- drop --\n"
                                 << "    pop rax\n";
                     }
+
                     else if (tok.text == getKeywordStr(Keyword::SWAP))
                     {
                         asm_file << "    ;; -- swap --\n"
@@ -494,6 +524,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    push rax\n"
                                 << "    push rbx\n";
                     }
+
                     else if (tok.text == getKeywordStr(Keyword::OVER))
                     {
                         asm_file << "    ;; -- over --\n"
@@ -503,35 +534,41 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    push rax\n"
                                 << "    push rbx\n";
                     }
+
+                    // ! previous `sub rsp, 32` and `add rsp, 32` were wrong?
 					else if (tok.text == getKeywordStr(Keyword::DUMP))
                     {
                         asm_file << "    ;; -- dump --\n"
                                 << "    lea rcx, [rel fmt]\n"
                                 << "    pop rdx\n"
                                 << "    xor rax, rax\n"
-                                << "    sub rsp, 32\n"
+                                << "    sub rsp, 64\n"
                                 << "    call printf\n"
-                                << "    add rsp, 32\n";
+                                << "    add rsp, 64\n";
                     }
+
+                    // ! previous `sub rsp, 32` and `add rsp, 32` were wrong?
                     else if (tok.text == getKeywordStr(Keyword::DUMP_C))
                     {
                         asm_file << "    ;; -- dump --\n"
                                 << "    lea rcx, [rel fmt_char]\n"
                                 << "    pop rdx\n"
                                 << "    xor rax, rax\n"
-                                << "    sub rsp, 32\n"
+                                << "    sub rsp, 64\n"
                                 << "    call printf\n"
-                                << "    add rsp, 32\n";
+                                << "    add rsp, 64\n";
                     }
+
+                    // ! previous `sub rsp, 32` and `add rsp, 32` were wrong?
                     else if (tok.text == getKeywordStr(Keyword::DUMP_S))
                     {
                         asm_file << "    ;; -- dump --\n"
                                 << "    lea rcx, [rel fmt_str]\n"
                                 << "    pop rdx\n"
                                 << "    xor rax, rax\n"
-                                << "    sub rsp, 32\n"
+                                << "    sub rsp, 64\n"
                                 << "    call printf\n"
-                                << "    add rsp, 32\n";
+                                << "    add rsp, 64\n";
                     }
 
 					else if (tok.text == getKeywordStr(Keyword::MEM))
@@ -539,8 +576,8 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                         // Pushes the relative address of allocated memory onto the stack
                         asm_file << "    ;; -- mem --\n"
                                 << "    push mem\n";
-
                     }
+
                     else if (tok.text == getKeywordStr(Keyword::LOADB))
                     {
                         asm_file << "    ;; -- load byte --\n"
@@ -549,6 +586,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    mov bl, [rax]\n"
                                 << "    push rbx\n";
                     }
+
                     else if (tok.text == getKeywordStr(Keyword::STOREB))
                     {
                         asm_file << "    ;; -- store byte --\n"
@@ -556,6 +594,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    pop rax\n"
                                 << "    mov [rax], bl\n";
                     }
+
 					else if (tok.text == getKeywordStr(Keyword::LOADW))
                     {
                         asm_file << "    ;; -- load word --\n"
@@ -564,6 +603,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    mov bx, [rax]\n"
                                 << "    push rbx\n";
                     }
+
                     else if (tok.text == getKeywordStr(Keyword::STOREW))
                     {
                         asm_file << "    ;; -- store word --\n"
@@ -571,8 +611,8 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    pop rax\n"
                                 << "    mov [rax], bx\n";
                     }
-					else if (tok.text == getKeywordStr(Keyword::LOADD))
 
+					else if (tok.text == getKeywordStr(Keyword::LOADD))
                     {
                         asm_file << "    ;; -- load double word --\n"
                                 << "    pop rax\n"
@@ -580,6 +620,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    mov ebx, [rax]\n"
                                 << "    push rbx\n";
                     }
+
                     else if (tok.text == getKeywordStr(Keyword::STORED))
                     {
                         asm_file << "    ;; -- store double word --\n"
@@ -587,6 +628,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    pop rax\n"
                                 << "    mov [rax], ebx\n";
                     }
+
 					else if (tok.text == getKeywordStr(Keyword::LOADQ))
                     {
                         asm_file << "    ;; -- load quad word --\n"
@@ -595,6 +637,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    mov rbx, [rax]\n"
                                 << "    push rbx\n";
                     }
+
                     else if (tok.text == getKeywordStr(Keyword::STOREQ))
                     {
                         asm_file << "    ;; -- store quad word --\n"
@@ -611,6 +654,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    shl rbx, cl\n"
                                 << "    push rbx";
                     }
+
                     else if (tok.text == getKeywordStr(Keyword::SHR))
                     {
                         asm_file << "    ;; -- bitwise-shift right --\n"
@@ -619,6 +663,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    shr rbx, cl\n"
                                 << "    push rbx";
                     }
+
                     else if (tok.text == getKeywordStr(Keyword::OR))
                     {
                         asm_file << "    ;; -- bitwise or --\n"
@@ -627,6 +672,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    or rax, rbx\n"
                                 << "    push rax\n";
                     }
+
                     else if (tok.text == getKeywordStr(Keyword::AND))
                     {
                         asm_file << "    ;; -- bitwise and --\n"
@@ -635,6 +681,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    and rax, rbx\n"
                                 << "    push rax\n";
                     }
+
 					else if (tok.text == getKeywordStr(Keyword::MOD))
                     {
                         asm_file << "    ;; -- modulo --\n"
@@ -643,6 +690,72 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
                                 << "    pop rax\n"
                                 << "    div rbx\n"
                                 << "    push rdx\n";
+                    }
+
+                    else if(tok.text == getKeywordStr(Keyword::OPEN_FILE))
+                    {
+                        asm_file << "    ;; -- open file and push pointer --\n"
+                                << "    pop rdx\n"
+                                << "    pop rcx\n"
+								<< "    sub rsp, 64\n"
+                                << "    call fopen\n"
+								<< "    add rsp, 64\n"
+                                << "    push rax\n";
+                    }
+
+                    else if (tok.text == getKeywordStr(Keyword::WRITE_TO_FILE))
+                    {
+                        asm_file << "    ;; -- write to file --\n"
+                                << "    pop r9\n"
+                                << "    pop r8\n"
+                                << "    pop rdx\n"
+                                << "    pop rcx\n"
+								<< "    sub rsp, 64\n"
+                                << "    call fwrite\n"
+								<< "    add rsp, 64\n";
+                    }
+
+					else if (tok.text == getKeywordStr(Keyword::CLOSE_FILE))
+                    {
+                        asm_file << "    ;; -- close file --\n"
+                                << "    pop rcx\n"
+								<< "    sub rsp, 64\n"
+                                << "    call fclose\n"
+								<< "    add rsp, 64\n";
+                    }
+
+					else if (tok.text == getKeywordStr(Keyword::LENGTH_S))
+                    {
+                        asm_file << "    ;; -- get length of string --\n"
+                                << "    pop rcx\n"
+								<< "    sub rsp, 64\n"
+                                << "    call strlen\n"
+								<< "    add rsp, 64\n"
+                                << "    push rax\n";
+                    }
+
+					else if (tok.text == getKeywordStr(Keyword::WRITE))
+                    {
+                        asm_file << "    ;; -- push pointer to write file mode constant --\n"
+                                << "    push write\n";
+                    }
+
+                    else if (tok.text == getKeywordStr(Keyword::WRITE_PLUS))
+                    {
+                        asm_file << "    ;; -- push pointer to write/read file mode constant --\n"
+                                << "    push write_plus\n";
+                    }
+
+                    else if (tok.text == getKeywordStr(Keyword::APPEND))
+                    {
+                        asm_file << "    ;; -- push pointer to append file mode constant --\n"
+                                << "    push append\n";
+                    }
+
+					else if (tok.text == getKeywordStr(Keyword::APPEND_PLUS))
+                    {
+                        asm_file << "    ;; -- push pointer to append/read file mode constant --\n"
+                                << "    push append_plus\n";
                     }
                 }
                 instr_ptr++;
@@ -656,7 +769,12 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
             asm_file << "    SECTION .data\n"
                     << "    fmt db '%u', 0\n"
                     << "    fmt_char db '%c', 0\n"
-                    << "    fmt_str db '%s', 0\n";
+                    << "    fmt_str db '%s', 0\n"
+                    << "    write db\"w\", 0\n"
+                    << "    append db \"a\", 0\n"
+					<< "    write_plus db \"w+\", 0\n"
+					<< "    append_plus db \"a+\", 0\n";
+
 
             // DECLARE USER-DEFINED STRING CONSTANTS HERE
             size_t index = 0;
@@ -693,7 +811,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
 // Generates GAS assembly file
 // Note: I have not used GAS to test this but to my knowledge it should work
 // If the person reading this is interested in using GAS, feel free to implement
-// and submit a pull request.
+// and submit a pull request. Have not updated it
 void Sparrow::generateAssembly_GAS_win64(Program &prog)
 {
     std::string asm_file_path = OUTPUT_NAME + ".s";
@@ -886,7 +1004,7 @@ void Sparrow::generateAssembly_GAS_win64(Program &prog)
             }
             else if (tok.type == TokenType::KEYWORD)
             {
-                static_assert(static_cast<int>(Keyword::COUNT) == 28, "Exhaustive handling of token types in GenerateAssembly_GAS_win64");
+                static_assert(static_cast<int>(Keyword::COUNT) == 36, "Exhaustive handling of token types in GenerateAssembly_GAS_win64");
                 if (tok.text == getKeywordStr(Keyword::IF))
                 {
                     asm_file << "    # -- if --\n"
@@ -1307,13 +1425,13 @@ bool Sparrow::handleCommandLineArgs(int argc, char **argv)
             ASSEMBLY_SYNTAX = ASM_SYNTAX::NASM;
 
             // SET PLATFORM SPECIFIC DEFAULTS
-            // Defaults assume tools were installed on the default drive as in the installer.
-            // Change the Paths to the correct paths that are in the Working Directory.
+
+            // Note: This gives relative
             ASMB_PATH = "Assembler\\nasm-2.15.05\\nasm.exe";
             ASMB_OPTS = "-f win64";
-            // Get Golink in the system
+
             LINK_PATH = "Linker\\GoLink\\GoLink.exe";
-            LINK_OPTS = "\\console\\ENTRY:main msvcrt.dll";
+            LINK_OPTS = "/console /entry :main msvcrt.dll";
         }
 
         else if (arg == "-GAS")
@@ -1671,7 +1789,7 @@ void Sparrow::validateTokens_stack(Program &prog)
         }
         else if(tok.type == TokenType::KEYWORD)
         {
-            static_assert(static_cast<int>(Keyword::COUNT) == 28, "Exhaustive handling of keywords in ValidateTokens_Stack");
+            static_assert(static_cast<int>(Keyword::COUNT) == 36, "Exhaustive handling of keywords in ValidateTokens_Stack");
 
             // Skip skippable tokens first? For Speed?
             if(tok.text == getKeywordStr(Keyword::ELSE)
@@ -1853,7 +1971,7 @@ bool Sparrow::validateBlock(Program& prog, size_t& instr_ptr, size_t instr_ptr_m
     // Assume that current token at instruction pointer is an `if`, `else`, `do`, or `while`
     size_t block_instr_ptr = instr_ptr;
 
-    static_assert(static_cast<int>(Keyword::COUNT) == 28,
+    static_assert(static_cast<int>(Keyword::COUNT) == 36,
             "Exhaustive handling of keywords in ValidateBlock. Keep in mind not all keywords form blocks.");
 
     // handle the while block
@@ -1967,7 +2085,7 @@ bool Sparrow::validateBlock(Program& prog, size_t& instr_ptr, size_t instr_ptr_m
 
 void Sparrow::validateTokens_blocks(Program &prog)
 {
-    static_assert(static_cast<int>(Keyword::COUNT) == 28,
+    static_assert(static_cast<int>(Keyword::COUNT) == 36,
             "Exhaustive handling of keywords in ValidateTokens_Blocks. Keep in mind not all tokens form blocks");
 
     size_t instr_ptr = 0;
