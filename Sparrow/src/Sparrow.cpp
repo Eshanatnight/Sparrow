@@ -64,6 +64,7 @@ std::string Sparrow::getKeywordStr(Keyword word)
 
     switch(word)
     {
+        // Normal Branching and Control Symbols
         case Keyword::IF:       { return "if";       }
         case Keyword::ELSE:     { return "else";     }
         case Keyword::ENDIF:    { return "endif";    }
@@ -71,6 +72,7 @@ std::string Sparrow::getKeywordStr(Keyword word)
         case Keyword::WHILE:    { return "while";    }
         case Keyword::ENDWHILE: { return "endwhile"; }
 
+        // Data and Printing Symbols
         case Keyword::DUP:      { return "dup";      }
         case Keyword::TWODUP:   { return "twodup";   }
         case Keyword::DROP:     { return "drop";     }
@@ -80,6 +82,7 @@ std::string Sparrow::getKeywordStr(Keyword word)
         case Keyword::DUMP_C:   { return "dump_c";   }
         case Keyword::DUMP_S:   { return "dump_s";   }
 
+        // Memory Access and Useage Symbols
         case Keyword::MEM:      { return "mem";      }
         case Keyword::LOADB:    { return "loadb";    }
         case Keyword::STOREB:   { return "storeb";   }
@@ -90,11 +93,24 @@ std::string Sparrow::getKeywordStr(Keyword word)
         case Keyword::LOADQ:    { return "loadq";    }
         case Keyword::STOREQ:   { return "storeq";   }
 
+        // Bitwise Symbols
         case Keyword::SHL:      { return "shl";      }
         case Keyword::SHR:      { return "shr";      }
         case Keyword::OR:       { return "or";       }
         case Keyword::AND:      { return "and";      }
         case Keyword::MOD:      { return "mod";      }
+
+        // File I/O Symbols
+        case Keyword::OPEN_FILE:        { return "open_file";     }
+        case Keyword::WRITE_TO_FILE:    { return "write_to_file"; }
+        case Keyword::CLOSE_FILE:       { return "close_file";    }
+        case Keyword::LENGTH_S:         { return "length_s";      }
+
+        // Open File Mode Symbols
+        case Keyword::WRITE:            { return "write";         }
+        case Keyword::WRITE_PLUS:       { return "write_plus";    }
+        case Keyword::APPEND:           { return "append";        }
+        case Keyword::APPEND_PLUS:      { return "append_plus";   }
         default:
         {
             Error("Unreachable in getKeywordStr Function");
