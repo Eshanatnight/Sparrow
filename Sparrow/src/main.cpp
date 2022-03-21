@@ -41,7 +41,7 @@ int main(int argc, char** argv)
     // Try to load program source from a file
     try
     {
-        printf("\nSOURCE_PATH: %s\n", SOURCE_PATH.c_str());
+        //printf("\nSOURCE_PATH: %s\n", SOURCE_PATH.c_str());
         prog.source = Sparrow::loadFromFile(SOURCE_PATH);
         if(verboseLogging)
         {

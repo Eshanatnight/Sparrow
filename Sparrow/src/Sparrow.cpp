@@ -51,7 +51,16 @@ bool Sparrow::isKeyword(std::string& word)
         || word == "shr"
         || word == "or"
         || word == "and"
-		|| word == "mod")
+		|| word == "mod"
+        || word == "open_file"
+        || word == "write_to_file"
+        || word == "read_file"
+        || word == "close_file"
+        || word == "length_s"
+        || word == "write"
+        || word == "write_plus"
+        || word == "append"
+        || word == "append_plus")
         {
             return true;
         }
