@@ -48,7 +48,7 @@ int main(int argc, char** argv)
             Sparrow::Log("Load File: Successful");
         }
     }
-    catch(std::runtime_error e)
+    catch(const std::runtime_error& e)
     {
         Sparrow::Error("Could not load file: " + std::string(e.what()));
         return -1;
@@ -128,7 +128,7 @@ int main(int argc, char** argv)
 
                     if (verboseLogging)
                     {
-                        Sparrow::printCharactersFromFile__fopen_s("assembler-log.txt", "Assembler Log");
+                        Sparrow::printCharactersFromFile_fopen_s("assembler-log.txt", "Assembler Log");
                     }
                 }
                 else
@@ -181,8 +181,8 @@ int main(int argc, char** argv)
 
                         if (verboseLogging)
                         {
-                            Sparrow::printCharactersFromFile__fopen_s("assembler-log.txt", "Assembler Log");
-                            Sparrow::printCharactersFromFile__fopen_s("linker-log.txt", "Linker Log");
+                            Sparrow::printCharactersFromFile_fopen_s("assembler-log.txt", "Assembler Log");
+                            Sparrow::printCharactersFromFile_fopen_s("linker-log.txt", "Linker Log");
                         }
                     }
 

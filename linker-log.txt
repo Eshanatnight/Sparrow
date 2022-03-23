@@ -1,0 +1,4 @@
+﻿
+GoLink.Exe Version 1.0.3.1  Copyright Jeremy Gordon 2002-2020   info@goprog.com
+Output file: .\test\WriteToFile\write_to_file.exe
+Format: X64   Size: 2,048 bytes

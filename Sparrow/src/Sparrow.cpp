@@ -20,7 +20,7 @@ bool Sparrow::isOperator(char& c)
 			|| c == '|';   // bitwise or (when combined with another)
 }
 
-bool Sparrow::isKeyword(std::string& word)
+bool Sparrow::isKeyword(const std::string& word)
 {
     static_assert(static_cast<int>(Keyword::COUNT) == 36, "Exhaustive handling of keywords in iskeyword");
 
@@ -67,7 +67,7 @@ bool Sparrow::isKeyword(std::string& word)
         return false;
 }
 
-std::string Sparrow::getKeywordStr(Keyword word)
+std::string Sparrow::getKeywordStr(const Keyword& word)
 {
     static_assert(static_cast<int>(Keyword::COUNT) == 36, "Exhaustive handling of keywords in getKeywordStr Function");
 
@@ -130,7 +130,7 @@ std::string Sparrow::getKeywordStr(Keyword word)
 }
 
 
-std::string Sparrow::TokenTypeStr(TokenType& t)
+std::string Sparrow::TokenTypeStr(const TokenType& t)
 {
     static_assert(static_cast<int>(TokenType::COUNT) == 5, "Exhaustive handling of TokenType in TokenTypeStr Function");
 
@@ -165,30 +165,30 @@ std::string Sparrow::TokenTypeStr(TokenType& t)
 }
 
 Sparrow::Token::Token()
-: type(TokenType::WHITESPACE), text(""), line_number(1), col_number(1)
+: type(TokenType::WHITESPACE),  line_number(1), col_number(1)
 {}
 
 
-void Sparrow::printUseage()
+void Sparrow::printUsage()
 {
-printf("\n%s\n", "Usage: `Sparrow.exe <flags> <options> Path/To/File.spar`");
-        printf("    %s\n", "Flags:");
-        printf("        %s\n", "-win, -win64             | (default) Generate assembly for Windows 64-bit. If no platform is specified, this is the default.");
-        printf("        %s\n", "-com, --compile          | (default) Compile program from source into executable");
-        printf("        %s\n", "-gen, --generate         | Generate assembly, but don't create an executable from it.");
-        printf("        %s\n", "-NASM                    | (default) When generating assembly, use NASM syntax. Any OPTIONS set before NASM may or may be over-ridden; best practice is to put it first.");
-        printf("        %s\n", "-GAS                     | When generating assembly, use GAS syntax. This is able to be assembled by gcc into an executable. (pass output file name to gcc with `-add-ao \"-o <output-file-name>\" and not the built-in `-o` option`). Any OPTIONS set before GAS may or may be over-ridden; best practice is to put it first.");
-        printf("        %s\n", "-v, --verbose            | Enable verbose logging within Sparrow");
-        printf("    %s\n", "Options (latest over-rides):");
-        printf("        %s\n", "Usage: <option> <input>");
-        printf("        %s\n", "If the <input> contains spaces, be sure to surround it by double quotes");
-        printf("        %s\n", "-o, --output-name        | Specify name of generated files.");
-        printf("        %s\n", "-a, --assembler-path     | Specify path to assembler (include extension)");
-        printf("        %s\n", "-l, --linker-path        | Specify path to linker (include extension)");
-        printf("        %s\n", "-ao, --assembler-options | Command line arguments called with assembler");
-        printf("        %s\n", "-lo, --linker-options    | Command line arguments called with linker");
-        printf("        %s\n", "-add-ao, --add-asm-opt   | Append a command line argument to assembler options");
-        printf("        %s\n", "-add-lo, --add-link-opt  | Append a command line argument to linker options");
+    printf("\n%s\n", "Usage: `Sparrow.exe <flags> <options> Path/To/File.spar`");
+    printf("    %s\n", "Flags:");
+    printf("        %s\n", "-win, -win64             | (default) Generate assembly for Windows 64-bit. If no platform is specified, this is the default.");
+    printf("        %s\n", "-com, --compile          | (default) Compile program from source into executable");
+    printf("        %s\n", "-gen, --generate         | Generate assembly, but don't create an executable from it.");
+    printf("        %s\n", "-NASM                    | (default) When generating assembly, use NASM syntax. Any OPTIONS set before NASM may or may be over-ridden; best practice is to put it first.");
+    printf("        %s\n", "-GAS                     | When generating assembly, use GAS syntax. This is able to be assembled by gcc into an executable. (pass output file name to gcc with `-add-ao \"-o <output-file-name>\" and not the built-in `-o` option`). Any OPTIONS set before GAS may or may be over-ridden; best practice is to put it first.");
+    printf("        %s\n", "-v, --verbose            | Enable verbose logging within Sparrow");
+    printf("    %s\n", "Options (latest over-rides):");
+    printf("        %s\n", "Usage: <option> <input>");
+    printf("        %s\n", "If the <input> contains spaces, be sure to surround it by double quotes");
+    printf("        %s\n", "-o, --output-name        | Specify name of generated files.");
+    printf("        %s\n", "-a, --assembler-path     | Specify path to assembler (include extension)");
+    printf("        %s\n", "-l, --linker-path        | Specify path to linker (include extension)");
+    printf("        %s\n", "-ao, --assembler-options | Command line arguments called with assembler");
+    printf("        %s\n", "-lo, --linker-options    | Command line arguments called with linker");
+    printf("        %s\n", "-add-ao, --add-asm-opt   | Append a command line argument to assembler options");
+    printf("        %s\n", "-add-lo, --add-link-opt  | Append a command line argument to linker options");
 }
 
 std::vector<std::string> Sparrow::stringToHex(const std::string& input)
@@ -221,33 +221,33 @@ std::vector<std::string> Sparrow::stringToHex(const std::string& input)
                 if(output[i] == "0x6e")
                 {
                     // Found \n character
-                    new_output.push_back("0xa");
+                    new_output.emplace_back("0xa");
                     continue;
                 }
 
                 else if (output[i] == "0x72")
                 {
                     // Found \r character
-                    new_output.push_back("0xd");
+                    new_output.emplace_back("0xd");
                     continue;
                 }
 
                 else if(output[i] == "0x74")
                 {
                     // Found \t character
-                    new_output.push_back("0x9");
+                    new_output.emplace_back("0x9");
                     continue;
                 }
             }
             // Special Character pattern not found, undo lookahead
             --i;
         }
-        new_output.push_back(output[i]);
+        new_output.emplace_back(std::move(output[i]));
     }
     return new_output;
 }
 
-void Sparrow::generateAssembly_NASM_win64(Program& prog)
+void Sparrow::generateAssembly_NASM_win64(const Program& prog)
 {
         // Loop through a lexed program and then generate assembly file from it.
         std::string asm_file_path = OUTPUT_NAME + ".asm";
@@ -262,7 +262,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
             std::vector<std::string> string_literals;
 
             // WRITE HEADER TO ASM FILE
-            asm_file << "    ;; Sparrow COMPILER GENERATED THIS ASSEMBLY -- (BY LENSOR RADII)\n"
+            asm_file << "    ;; Sparrow COMPILER GENERATED THIS ASSEMBLY\n"
                     << "    ;; USING `WINDOWS x64` CALLING CONVENTION (RCX, RDX, R8, R9, ETC)\n"
                     << "    SECTION .text\n"
                     << "    ;; DEFINE EXTERNAL C RUNTIME SYMBOLS (LINK AGAINST MSVCRT.DLL)\n"
@@ -286,7 +286,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
 
             while (instr_ptr < instr_ptr_max)
             {
-                Token& tok = prog.tokens[instr_ptr];
+                const Token& tok = prog.tokens[instr_ptr];
                 if (tok.type == TokenType::INT)
                 {
                     asm_file << "    ;; -- push INT --\n"
@@ -837,7 +837,7 @@ void Sparrow::generateAssembly_NASM_win64(Program& prog)
 // Note: I have not used GAS to test this but to my knowledge it should work
 // If the person reading this is interested in using GAS, feel free to implement
 // and submit a pull request. Have not updated it
-void Sparrow::generateAssembly_GAS_win64(Program &prog)
+void Sparrow::generateAssembly_GAS_win64(const Program &prog)
 {
     std::string asm_file_path = OUTPUT_NAME + ".s";
     std::fstream asm_file;
@@ -852,7 +852,7 @@ void Sparrow::generateAssembly_GAS_win64(Program &prog)
         std::vector<std::string> string_literals;
 
         // WRITE HEADER TO ASM FILE
-        asm_file << "    # CORTH COMPILER GENERATED THIS ASSEMBLY\n"
+        asm_file << "    # Sparrow COMPILER GENERATED THIS ASSEMBLY\n"
                 << "    # USING `GAS` SYNTAX\n"
                 << "    # USING `WINDOWS X64` CALLING CONVENTION (RCX, RDX, R8, R9, -> STACK)\n"
                 << "    .text\n"
@@ -866,7 +866,7 @@ void Sparrow::generateAssembly_GAS_win64(Program &prog)
 
         while (instr_ptr < instr_ptr_max)
         {
-            Token& tok = prog.tokens[instr_ptr];
+            const Token& tok = prog.tokens[instr_ptr];
 
             // Write assembly to opened file based on token type and value
             if (tok.type == TokenType::INT)
@@ -1300,7 +1300,7 @@ bool Sparrow::handleCommandLineArgs(int argc, char **argv)
     // No command line arguments were passed.
     if(argc == 1)
     {
-        printUseage();
+        printUsage();
         return false;
     }
 
@@ -1310,7 +1310,7 @@ bool Sparrow::handleCommandLineArgs(int argc, char **argv)
 
         if(arg == "-h" || arg == "--help")
         {
-            printUseage();
+            printUsage();
             return false;
         }
 
@@ -1487,7 +1487,7 @@ bool Sparrow::handleCommandLineArgs(int argc, char **argv)
     return true;
 }
 
-bool Sparrow::isWhiteSpace(char& c)
+bool Sparrow::isWhiteSpace(const char& c)
 {
     // Basically checks if the character is a space, tab, newline or crlf
     return c == ' ' || c == '\t' || c == '\n' || c == '\r';
@@ -2219,7 +2219,7 @@ std::string Sparrow::loadFromFile(const std::string& filePath)
     return std::string(std::istreambuf_iterator<char>(inFileStream), std::istreambuf_iterator<char>());
 }
 
-void Sparrow::printCharactersFromFile__fopen_s(const std::string& filePath, const std::string logPrefix)
+void Sparrow::printCharactersFromFile_fopen_s(const std::string& filePath, const std::string logPrefix)
 {
     FILE* fstream = nullptr;
     char c;

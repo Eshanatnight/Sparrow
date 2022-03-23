@@ -104,13 +104,13 @@ namespace Sparrow
         * @return: bool
         * @param: std::string&
     */
-    bool isKeyword(std::string& word);
+    bool isKeyword(const std::string& word);
 
     /*
         * This function outlines the sparrow source input and the output it will generate.
         * case <output>: { return "<input>"; }
     */
-    std::string getKeywordStr(Keyword word);
+    std::string getKeywordStr(const Keyword& word);
 
     /*
         * Enum Class for TokenTypes used in our lexer.
@@ -131,7 +131,7 @@ namespace Sparrow
         * @return: std::string
         * @param: TokenType&
     */
-    std::string TokenTypeStr(TokenType& type);
+    std::string TokenTypeStr(const TokenType& type);
 
 /*
     * Data Structure for a Token
@@ -159,18 +159,18 @@ namespace Sparrow
     };
 
     /*
-        * Function that prints out the useage of the compiler
+        * Function that prints out the usage of the compiler
     */
-    void printUseage();
+    void printUsage();
 
     // NASM doesn't deal with strings well, so I construct hex by hand to ensure behaviour is expected.
     std::vector<std::string> stringToHex(const std::string& str);
 
     // Generating the ASM code for NASM ASSEMBLER
-    void generateAssembly_NASM_win64(Program& program);
+    void generateAssembly_NASM_win64(const Program& program);
 
     // Generating the ASM code for GAS ASSEMBLER
-    void generateAssembly_GAS_win64(Program& program);
+    void generateAssembly_GAS_win64(const Program& program);
 
     /* Handle the command line arguments that are passed to the program.
         @return value:
@@ -180,7 +180,7 @@ namespace Sparrow
     bool handleCommandLineArgs(int argc, char** argv);
 
     // Checks if a passed character is a whitespace character or not
-    bool isWhiteSpace(char& c);
+    bool isWhiteSpace(const char& c);
 
     // Push tokens in to the token vector
     void pushToken(std::vector<Token>& tokList, Token& tok);
@@ -194,7 +194,7 @@ namespace Sparrow
     // Print all the tokens on the token vector in a program
     void PrintTokens(Program& p);
 
-    // parses for the removeable Tokens
+    // parses for the removable Tokens
     bool removableToken(Token& tok);
 
     /*
@@ -229,9 +229,10 @@ namespace Sparrow
     std::string loadFromFile(const std::string& filepath);
 
     // Uses fopen_s
-    void printCharactersFromFile__fopen_s(const std::string& filePath, const std::string logPrefix);
+    void printCharactersFromFile_fopen_s(const std::string& filePath, const std::string logPrefix);
 
     // Uses depricated fopen
+    // Removed use in sparrow
     void printCharactersFromFile(std::string filePath, std::string logPrefix = "[LOG]");
 
     void staticCheck();
@@ -243,7 +244,7 @@ extern Sparrow::MODE RUN_MODE;
 extern Sparrow::PLATFORM RUN_PLATFORM;
 
 //I have not tried this with GAS Assembler yet. So there might be some bugs.
-// For the GAS Syntax. Look Sparrow.cpp Line: 694
+// For the GAS Syntax. Look Sparrow.cpp Line: 840
 extern Sparrow::ASM_SYNTAX ASSEMBLY_SYNTAX;
 
 // move to a sparrow namespace?
