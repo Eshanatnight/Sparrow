@@ -491,7 +491,7 @@ Standard Output:
 
 ---
 
-#### '>' - LESS-THAN <a name="op-cmp-lt"></a>
+#### '<' - LESS-THAN <a name="op-cmp-lt"></a>
 Pops two values, `a` and `b`, off of the stack then pushes a `1` if `a` is smaller than `b`, or a `0` otherwise.
 
 ```
@@ -522,7 +522,7 @@ Standard Output:
 
 ---
 
-#### '>' - GREATER-THAN-OR-EQUAL <a name="op-cmp-ge"></a>
+#### '>=' - GREATER-THAN-OR-EQUAL <a name="op-cmp-ge"></a>
 Pops two values, `a` and `b`, off of the stack then pushes a `1` if `a` is larger than or equal to `b`, or a `0` otherwise.
 
 ```
@@ -553,7 +553,7 @@ Standard Output:
 
 ---
 
-#### '>' - LESS-THAN-OR-EQUAL <a name="op-cmp-le"></a>
+#### '<=' - LESS-THAN-OR-EQUAL <a name="op-cmp-le"></a>
 Pops two values, `a` and `b`, off of the stack then pushes a `1` if `a` is smaller than or equal to `b`, or a `0` otherwise.
 
 ```
@@ -615,7 +615,7 @@ Standard Output:
 
 ---
 
-#### '<<' - BITWISE-SHIFT RIGHT <a name="op-bit-shr"></a>
+#### '>>' - BITWISE-SHIFT RIGHT <a name="op-bit-shr"></a>
 Pops two values, `a` and `b`, off of the stack then pushes bits of `a` shifted right by `b` amount of bits.
 
 ```
@@ -735,7 +735,12 @@ Standard Output:
 |[and](#kw-and)          | `[a][b] -> [a && b]`        | Equivalent to [&&](#op-bit-and) operator.                              |
 |[or](#kw-or)            | `[a][b] -> [a \|\| b]`      | Equivalent to [\|\|](#op-bit-or) operator.                             |
 |[mod](#kw-mod)          | `[a][b] -> [a % b]`         | Equivalent to [%](#op-modulo) operator.                                |
-|[open_file](#kw-f-open) | `[path][mode] -> [ptr]`     | Push a pointer to a file at path on to the #### 'if' -
+|[open_file](#kw-f-open) | `[path][mode] -> [ptr]`     | Push a pointer to a file at path on to the                     |
+|[write_to_file](#kw-f-write)| `[str][1][len][ptr] -> []` | Write a string `str` to a file `ptr`.                               |
+|[close_file](#kw-f-close)| `[ptr] -> []`              | Safely close an opened file.                                           |
+|[length_s](#kw-strlen)    | `[str] -> [len]`          | Push the length of a string on to the stack.                           |
+|[write](#kw-write)      | `[] -> [mode]`              | Push the `write` file mode constant on to the stack.                   |
+|[append](#kw-append)      | `[] -> [mode]`            | Push the `append` file mode constant on to the stack.
 
 ---
 
@@ -1703,7 +1708,7 @@ There are two assembly syntaxes Sparrow supports (for now):
 
 #### Windows <a name="use-sparrow-GAS-windows"></a>
 I would not really recommand this!
-As for Windows, there is a little funky business... MinGW, the 'normal' installation manager for GNU tools on Windows, doesn't support 64 bits. \
+For Windows, there is a little funky business... MinGW, the 'normal' installation manager for GNU tools on Windows, doesn't support 64 bits. \
 Luckily, there is a community-fix, [TDM-GCC-64](https://jmeubank.github.io/tdm-gcc/), that solves this exact problem, so go donate to this person for doing the hard work that all of us can now use. If for some reason the github was taken down, or anything of the sort, [here](https://web.archive.org/web/20220105210812/https://github.com/jmeubank/tdm-gcc) is a link to a wayback machine snapshot. \
 It's a very easy to use installer, and comes with a whole host of very useful 64 bit tools on Windows. Install it at the default location, otherwise Sparrow will need to be passed the path to the `gcc` executable using the SCLI `-a` option.
 
@@ -1726,9 +1731,10 @@ Sparrow.exe -GAS -add-ao "-o my-output-name" -o my-output-name test.spar
 ```
 
 ### NASM <a name="use-sparrow-NASM"></a>
-On Windows you can [download the installer from the official website](https://www.nasm.us/)
+Just use the one that is packed with the Sparrow Repository.
 
-Or just use the one that is packed with the Sparrow Repository.
+But if you want an updated version on Windows you can [download the installer from the official website](https://www.nasm.us/)
+
 
 #### You must ensure that you have some sort of linker on your machine that can link against the standard C runtime of whatever platform you're on.
 
@@ -1785,100 +1791,8 @@ Windows example: \
 Open Visual Studio solution and build with `F6`
 
 [To Top](#top)
-stack.                      |
-|[write_to_file](#kw-f-write)| `[str][1][len][ptr] -> []` | Write a string `str` to a file `ptr`.                               |
-|[close_file](#kw-f-close)| `[ptr] -> []`              | Safely close an opened file.                                           |
-|[length_s](#kw-strlen)    | `[str] -> [len]`          | Push the length of a string on to the stack.                           |
-|[write](#kw-write)      | `[] -> [mode]`              | Push the `write` file mode constant on to the stack.                   |
-|[append](#kw-append)      | `[] -> [mode]`            | Push the `append` file mode constant on to the stack.
 
 ---
-
-## <a name="how-to-use-anchor"></a><a name="cross-platform-anchor"></a> How to build a Sparrow program
-So, you've written a program, what do you do now that you want to run it?
-
-If you do not already have the Sparrow executable, you can either download it from the [releases page](https://github.com/LensPlaysGames/Sparrow/releases) or build it yourself using CMake after cloning the repository (further instructions [down below](#how-to-build-sparrow)).
-
-There are two assembly syntaxes Sparrow supports (for now):
-- [GAS](#use-sparrow-GAS)
-  - [Windows](#use-sparrow-GAS-windows)
-- [NASM](#use-sparrow-NASM)
-  - [Windows](#use-sparrow-NASM-windows)
-
-### GAS, or the [GNU assembler](https://en.wikipedia.org/wiki/GNU_Assembler) <a name="use-sparrow-GAS"></a>
-
-#### Windows <a name="use-sparrow-GAS-windows"></a>
-As for Windows, there is a little funky business... MinGW, the 'normal' installation manager for GNU tools on Windows, doesn't support 64 bits. \
-Luckily, there is a community-fix, [TDM-GCC-64](https://jmeubank.github.io/tdm-gcc/), that solves this exact problem, so go donate to this person for doing the hard work that all of us can now use. If for some reason the github was taken down, or anything of the sort, [here](https://web.archive.org/web/20220105210812/https://github.com/jmeubank/tdm-gcc) is a link to a wayback machine snapshot. \
-It's a very easy to use installer, and comes with a whole host of very useful 64 bit tools on Windows. Install it at the default location, otherwise Sparrow will need to be passed the path to the `gcc` executable using the CCLI `-a` option.
-
-To familiarize yourself with the Sparrow Command Line Interface (CCLI), run the following command: \
-`Sparrow.exe -h` or `Sparrow.exe --help` \
-This will list all of the possible flags and options that may be passed to Sparrow.
-
-Example command to compile `test.spar` to an executable on Windows: \
-`Sparrow.exe -GAS test.spar`
-
-Example command with output renamed: \
-`Sparrow.exe -GAS -add-ao "-o my-output-name" -o my-output-name test.spar`
-
-### NASM <a name="use-sparrow-NASM"></a>
-The NASM assembler is a very powerful tool, but it is not as easy to use as the GAS assembler. \
-So, the NASM assembler is packed with this repository, and is available for use in Sparrow,    \
-Under their Open Source License.
-
-#### You must ensure that you have some sort of linker on your machine that can link against the standard C runtime of whatever platform you're on.
-
-- [GoLink](http://godevtool.com/) is my recommendation on Windows. \
-Again GoLink is packed with this repository!
-
-Once all the pre-requisites are installed, now comes time to use the SCLI, or Sparrow Command Line Interface. \
-To avoid headache as much as possible, Sparrow sets default values based on this repositories directory structure.
-
-### Windows <a name="use-sparrow-NASM-windows"></a>
-Open a terminal and navigate to the directory containing `Sparrow.exe`. \
-To familiarize yourself with the options of the SCLI, run the following command: \
-`Sparrow.exe -h` or `Sparrow.exe --help` \
-A lot of different options will come up, with clear explanations on what everything does.
-
-Basic example: \
-`Sparrow.exe -o my_program test.spar`
-
-Or, if Sparrow is giving errors about not finding assembler/linker: \
-`Sparrow.exe -a /Path/To/NASM/nasm.exe -l /Path/To/GoLink/golink.exe test.spar`
-
-Alternatively, you could add the directory containing the executable to your system's [PATH environment variable](https://www.c-sharpcorner.com/article/add-a-directory-to-path-environment-variable-in-windows-10/): \
-`Sparrow.exe -a nasm.exe -l golink.exe test.spar`
-
-By default, the assembler and linker options are setup for Windows, using NASM and GoLink. \
-If your situation is different, make sure to specify the correct options using `-ao` and `-lo` respectively.
-
-### <a name="common-errors-anchor"></a>Common Errors
-- "Assembler not found at x"
-  - Solution: Specify a valid path, including file name and extension, to the assembler executable using `-a` or `--assembler-path`
-- "Linker not found at x"
-  - Solution: Specify a valid path, including file name and extension, to the linker executable using `-l Path/To/Linker.exe` or `--linker-path Path/To/Linker.exe`
-- The stdout and stderr of any commands run are redirected to a log file in the same directory as the Sparrow executable. The contents of these files are printed to the console when the verbose flag is passed to Sparrow through the CCLI with `-v` or `--verbose`.
-
-[To Top](#top)
-
----
-
-## <a name="how-to-build-sparrow"></a>How to build Sparrow from source
-This project uses [CMake](https://cmake.org/) to build Sparrow for any platform that CMake supports (which is a lot). \
-This means Sparrow source code can be easily built in your favorite IDE that supports C++.
-
-First, on any platform, clone this repository to your local machine.
-
-Run the following command in the repository directory: \
-`cmake -S . -B build/`
-
-This will use CMake to build a build system with the default generator on your platform. \
-Once complete, open the build directory, and build Sparrow using the build system you just generated.
-
-Windows example: \
-Open Visual Studio solution and build with `F6`
-
 ### Easy Test Up
 Easiest way to see how the Compiler Works is to use the Powershell file. This would basically run the two tests.
 ```
