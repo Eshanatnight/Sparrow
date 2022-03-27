@@ -2,7 +2,7 @@
 /.idea
 /.vs
 /.vscode
-
+Sparrow.code-workspace
 
 # Build Files and Folders
 /out
