@@ -1,2 +1,2 @@
-// Hello world in Corth
 "Hello, World!\n" dump_s
+65 dump_c
