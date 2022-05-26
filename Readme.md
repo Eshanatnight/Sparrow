@@ -56,10 +56,11 @@ This is where we go get complicated!
 ---
 
 ### A Simple Example <a name="how-to-a-simple-example"></a>
+
 Take a look at this example in Sparrow:
-```
-34 35 + #
-```
+
+	34 35 + #
+
 It is a basic Sparrow program that will add two numbers together, and then display the sum to the console.
 
 Expected output for the above program when run: \
@@ -74,6 +75,7 @@ Let's break down how it works piece-by-piece:
 |    4 |  `#` | The `#` symbol will dump from the stack, aka pop a value off and then print it to the console.                                  |
 
 Stack breakdown by step:
+
 ```
 0. []
 1. [34]
@@ -94,6 +96,7 @@ Related:
 ---
 
 ### Hello, World! <a name="how-to-hello-world"></a>
+
 String literals are now supported in Sparrow; this makes printing a string to the console as simple as dumping with the `_s` suffix indicating a string format should be used.
 
 ```
@@ -104,11 +107,13 @@ As you can see, Sparrow supports some escaped characters within strings.
 They are `\n`, `\r`, and `\t`, to be exact.
 
 You can also dump single characters using an ASCII code like so:
+
 ```
 10 dump_c
 ```
 
 Expected output:
+
 ```
 Hello, World!
 
@@ -116,6 +121,7 @@ Hello, World!
 ```
 
 Related:
+
 - Keyword: [dump](#kw-dump)
 
 [To Top](#top)
@@ -123,7 +129,9 @@ Related:
 ---
 
 ### Conditional Branching <a name="how-to-conditional-branching"></a>
+
 Let's look at a slightly more complicated example program:
+
 ```
 500 80 - 420 = if
   69 #
@@ -131,7 +139,9 @@ else
   420 #
 endif
 ```
-This program should first evaulate `500 - 80`, then compare if that sum is equal to `420`. If true, print <samp>69</samp>. If false, print <samp>420</samp>. \
+
+This program should first evaulate `500 - 80`, then compare if that sum is equal to `420`. If true, print
+<samp>69</samp>. If false, print <samp>420</samp>. \
 Expected output: \
 <samp>69</samp>
 
@@ -152,7 +162,9 @@ Let's break down how it works piece-by-piece:
 ---
 
 ### Loops <a name="how-to-loops"></a>
+
 Sparrow now fully supports loops! Check out the following example:
+
 ```
 1
 while dup 30 <= do
@@ -183,9 +195,11 @@ With programs as simple as these, it's okay to do, however best practices indica
 ---
 
 ### Complications <a name="how-to-complications"></a>
+
 For a more complex example, see [rule 110](./examples/rule110.spar)
 
 Related:
+
 - Keyword: [mem](#kw-mem)
 - Keyword: [load](#kw-load)
 - Keyword: [store](#kw-store)
@@ -197,11 +211,13 @@ Related:
 ## Definitions: <a name="sparrow-definitions"></a>
 
 Sections:
+
 - [Stack Notation](#sparrow-stack-notation)
 - [Operators](#sparrow-operators)
 - [Keywords](#sparrow-keywords)
 
 #### Stack Notation <a name="sparrow-stack-notation"></a>
+
 The stack notation of the Sparrow documentation is quite simple. \
 A stack item is surrounded in square brackets. \
 The arrow '->' indicates a before and after view of the stack.
@@ -218,6 +234,7 @@ Example of a notation that pops two values and pushes the sum of them on to the 
 [To Top](#top)
 
 #### Operators <a name="sparrow-operators"></a>
+
 An operator will take value(s) from the stack and optionally push some back on.
 The amount of values removed/added from/to the stack by a given operator can be seen by the stack notation in the following table.
 For further information on the operator, click on the link to be directed to a more verbose definition of the operator, down below.
@@ -241,6 +258,7 @@ For further information on the operator, click on the link to be directed to a m
 | [\|\|](#op-bit-or)| `[a][b] -> [a \|\| b]`| Bitwise or on top two elements of stack.                                           |
 
 #### '#' - DUMP <a name="op-dump"></a>
+
 Humankind's best friend; pops a single value, `a`,  off the stack, then prints `a` to the console formatted as an unsigned integer.
 For alternate formats, see related.
 
@@ -249,21 +267,27 @@ For alternate formats, see related.
 ```
 
 Eqiuvalent
+
 - [Keyword: dump](#kw-dump)
 
 Related
+
 - [dump keywords](#sparrow-keywords)
 
 Example:
+
 ```
 420 #
 ```
+
 Stack Output:
+
 ```
 []
 ```
 
 Standard Output:
+
 ```
 420
 ```
@@ -280,22 +304,27 @@ Pops two values, `a` and `b`, off of the stack, then pushes the sum of those val
 ```
 
 Equivalent
+
 - No equivalents
 
 Related
+
 - No related
 
 Example:
+
 ```
 34 35 +
 ```
 
 Stack Output:
+
 ```
 [69]
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -304,6 +333,7 @@ Standard Output:
 ---
 
 #### '-' - SUBTRACT <a name="op-subtract"></a>
+
 Pops two values, `a` and `b`, off of the stack, then pushes the difference of those values.
 
 ```
@@ -311,22 +341,27 @@ Pops two values, `a` and `b`, off of the stack, then pushes the difference of th
 ```
 
 Equivalent
+
 - No equivalents
 
 Related
+
 - No related
 
 Example:
+
 ```
 500 80 -
 ```
 
 Stack Output:
+
 ```
 [420]
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -335,6 +370,7 @@ Standard Output:
 ---
 
 #### '*' - MULTIPLY <a name="op-multiply"></a>
+
 Pops two values, `a` and `b`, off of the stack, then pushes the product of those values.
 
 ```
@@ -342,22 +378,27 @@ Pops two values, `a` and `b`, off of the stack, then pushes the product of those
 ```
 
 Equivalent
+
 - No equivalents
 
 Related
+
 - No related
 
 Example:
+
 ```
 23 3 *
 ```
 
 Stack Output:
+
 ```
 [69]
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -366,6 +407,7 @@ Standard Output:
 ---
 
 #### '/' - DIVIDE <a name="op-divide"></a>
+
 Pops two values, `a` and `b`, off of the stack, then pushes the product of those values.
 
 ```
@@ -373,22 +415,27 @@ Pops two values, `a` and `b`, off of the stack, then pushes the product of those
 ```
 
 Equivalent
+
 - No equivalents
 
 Related
+
 - No related
 
 Example:
+
 ```
 1260 3 /
 ```
 
 Stack Output:
+
 ```
 [420]
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -397,6 +444,7 @@ Standard Output:
 ---
 
 #### '%' - MODULO <a name="op-modulo"></a>
+
 Pops two values, `a` and `b`, off of the stack, then pushes `a` modulo `b` on to the stack.
 
 A modulus operation entails dividing, yet the result is the remainder, not the quotient.
@@ -406,9 +454,11 @@ A modulus operation entails dividing, yet the result is the remainder, not the q
 ```
 
 Equivalent
+
 - [Keyword: mod](#kw-mod)
 
 Related
+
 - No related
 
 Example:
@@ -430,6 +480,7 @@ Standard Output:
 ---
 
 #### '=' - EQUAL <a name="op-cmp-eq"></a>
+
 Pops two values off of the stack then pushes a `1` if the values are equal, or a `0` otherwise.
 
 ```
@@ -437,22 +488,27 @@ Pops two values off of the stack then pushes a `1` if the values are equal, or a
 ```
 
 Equivalent
+
 - No equivalent
 
 Related
+
 - [Conditional Branching](#kw-if)
 
 Example:
+
 ```
 5 5 * 25 =
 ```
 
 Stack Output:
+
 ```
 [1]
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -461,6 +517,7 @@ Standard Output:
 ---
 
 #### '>' - GREATER-THAN <a name="op-cmp-gt"></a>
+
 Pops two values, `a` and `b`, off of the stack then pushes a `1` if `a` is larger than `b`, or a `0` otherwise.
 
 ```
@@ -468,22 +525,27 @@ Pops two values, `a` and `b`, off of the stack then pushes a `1` if `a` is large
 ```
 
 Equivalent
+
 - No equivalent
 
 Related
+
 - [Conditional Branching](#kw-if)
 
 Example:
+
 ```
 105 4 * 300 >
 ```
 
 Stack Output:
+
 ```
 [1]
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -492,6 +554,7 @@ Standard Output:
 ---
 
 #### '<' - LESS-THAN <a name="op-cmp-lt"></a>
+
 Pops two values, `a` and `b`, off of the stack then pushes a `1` if `a` is smaller than `b`, or a `0` otherwise.
 
 ```
@@ -499,22 +562,27 @@ Pops two values, `a` and `b`, off of the stack then pushes a `1` if `a` is small
 ```
 
 Equivalent
+
 - No equivalent
 
 Related
+
 - [Conditional Branching](#kw-if)
 
 Example:
+
 ```
 105 5 - 420 <
 ```
 
 Stack Output:
+
 ```
 [1]
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -523,6 +591,7 @@ Standard Output:
 ---
 
 #### '>=' - GREATER-THAN-OR-EQUAL <a name="op-cmp-ge"></a>
+
 Pops two values, `a` and `b`, off of the stack then pushes a `1` if `a` is larger than or equal to `b`, or a `0` otherwise.
 
 ```
@@ -530,22 +599,27 @@ Pops two values, `a` and `b`, off of the stack then pushes a `1` if `a` is large
 ```
 
 Equivalent
+
 - No equivalent
 
 Related
+
 - [Conditional Branching](#kw-if)
 
 Example:
+
 ```
 105 4 * 420 >=
 ```
 
 Stack Output:
+
 ```
 [1]
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -554,6 +628,7 @@ Standard Output:
 ---
 
 #### '<=' - LESS-THAN-OR-EQUAL <a name="op-cmp-le"></a>
+
 Pops two values, `a` and `b`, off of the stack then pushes a `1` if `a` is smaller than or equal to `b`, or a `0` otherwise.
 
 ```
@@ -561,22 +636,27 @@ Pops two values, `a` and `b`, off of the stack then pushes a `1` if `a` is small
 ```
 
 Equivalent
+
 - No equivalent
 
 Related
+
 - [Conditional Branching](#kw-if)
 
 Example:
+
 ```
 34 35 + 69 <=
 ```
 
 Stack Output:
+
 ```
 [1]
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -585,6 +665,7 @@ Standard Output:
 ---
 
 #### '<<' - BITWISE-SHIFT LEFT <a name="op-bit-shl"></a>
+
 Pops two values, `a` and `b`, off of the stack then pushes bits of `a` shifted left by `b` amount of bits.
 
 ```
@@ -592,22 +673,27 @@ Pops two values, `a` and `b`, off of the stack then pushes bits of `a` shifted l
 ```
 
 Equivalent
+
 - [Keyword: shl](#kw-shl)
 
 Related
+
 - No related
 
 Example:
+
 ```
 1 3 <<
 ```
 
 Stack Output:
+
 ```
 [8]
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -616,6 +702,7 @@ Standard Output:
 ---
 
 #### '>>' - BITWISE-SHIFT RIGHT <a name="op-bit-shr"></a>
+
 Pops two values, `a` and `b`, off of the stack then pushes bits of `a` shifted right by `b` amount of bits.
 
 ```
@@ -623,22 +710,27 @@ Pops two values, `a` and `b`, off of the stack then pushes bits of `a` shifted r
 ```
 
 Equivalent
+
 - [Keyword: shr](#kw-shr)
 
 Related
+
 - No related
 
 Example:
+
 ```
 32 2 >>
 ```
 
 Stack Output:
+
 ```
 [8]
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -647,6 +739,7 @@ Standard Output:
 ---
 
 #### '&&' - AND <a name="op-bit-and"></a>
+
 Pops two values, `a` and `b`, off of the stack, then pushes the [bitwise-and](https://en.wikipedia.org/wiki/Bitwise_operation#AND) of the two values.
 
 ```
@@ -654,22 +747,27 @@ Pops two values, `a` and `b`, off of the stack, then pushes the [bitwise-and](ht
 ```
 
 Equivalent
+
 - [Keyword: and](#kw-and)
 
 Related
+
 - No related
 
 Example:
+
 ```
 9 3 &&
 ```
 
 Stack Output:
+
 ```
 [1]
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -678,6 +776,7 @@ Standard Output:
 ---
 
 #### '||' - OR <a name="op-bit-or"></a>
+
 Pops two values, `a` and `b`, off of the stack, then pushes the [bitwise-or](https://en.wikipedia.org/wiki/Bitwise_operation#OR) of the two values.
 
 ```
@@ -685,22 +784,27 @@ Pops two values, `a` and `b`, off of the stack, then pushes the [bitwise-or](htt
 ```
 
 Equivalent
+
 - [Keyword: or](#kw-or)
 
 Related
+
 - No related
 
 Example:
+
 ```
 9 3 ||
 ```
 
 Stack Output:
+
 ```
 [11]
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -711,6 +815,7 @@ Standard Output:
 ---
 
 #### Keywords  <a name="sparrow-keywords"></a>
+
 | Keyword                | Notation                    | Description                                                            |
 |:----------------------:|:---------------------------:|:-----------------------------------------------------------------------|
 |[if](#kw-if)            | `[a] -> []`                 | Jump to `else`/`endif` only if popped value is equal to zero.          |
@@ -745,25 +850,31 @@ Standard Output:
 ---
 
 #### 'if' - Conditional Branch <a name="kw-if"></a><a name="kw-else"></a><a name="kw-endif"></a>
+
 The `if` keyword pops a value off the stack, then jumps to `endif` if the value is zero ,or `else` if it is present between `if`/`endif`.
 
 `if`
+
 ```
 [a] -> []
 ```
 
 `else`, `endif`
+
 ```
 [] -> []
 ```
 
 Equivalent:
+
 - No equivalent
 
 Related:
+
 - No related
 
 Example:
+
 ```
 1 1 = if
   420 #
@@ -773,11 +884,13 @@ endif
 ```
 
 Stack Output:
+
 ```
 []
 ```
 
 Standard Output:
+
 ```
 420
 ```
@@ -787,43 +900,51 @@ Standard Output:
 ---
 
 #### 'while' - Looping <a name="kw-while"></a><a name="kw-do"></a><a name="kw-endwhile"></a>
+
 The `while` keyword generates a label for `endwhile` to jump to unconditionally. \
 The `do` keyword is similar to the `if` keyword; if the item on the top of the stack is zero, it will jump just past `endwhile`, stopping the loop. \
 The `endwhile` keyword is a necessary block ending symbol for the `while` keyword.
 
 `do`
+
 ```
 [a] -> []
 ```
 
 `while`, `endwhile`
+
 ```
 [] -> []
 ```
 
 Equivalent:
+
 - No equivalent
 
 Related:
+
 - No related
 
 Example:
+
 ```
 1            // initialize loop counter
 while dup 5 <= do
-  dup dump   // print loop counter
-  10 dump_c  // print newline
-  1 +        // increment loop counter
+	dup dump   // print loop counter
+	10 dump_c  // print newline
+	1 +        // increment loop counter
 endwhile
 drop         // drop loop counter from stack
 ```
 
 Stack Output:
+
 ```
 []
 ```
 
 Standard Output:
+
 ```
 1
 2
@@ -837,6 +958,7 @@ Standard Output:
 ---
 
 #### 'dup' - Stack Operation <a name="kw-dup"></a>
+
 Duplicates the item at the top of the stack.
 
 ```
@@ -844,22 +966,27 @@ Duplicates the item at the top of the stack.
 ```
 
 Equivalent:
+
 - No equivalent
 
 Related:
+
 - Keyword: [twodup](#kw-twodup)
 
 Example:
+
 ```
 69 dup
 ```
 
 Stack Output:
+
 ```
 [69][69]
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -868,6 +995,7 @@ Standard Output:
 ---
 
 #### 'twodup' - Stack Operation <a name="kw-twodup"></a>
+
 Duplicates the top two items of the stack.
 
 ```
@@ -875,23 +1003,28 @@ Duplicates the top two items of the stack.
 ```
 
 Equivalent:
+
 - No equivalent
 
 Related:
+
 - Keyword: [dup](#kw-dup)
 
 Example:
+
 ```
 69 420
 twodup
 ```
 
 Stack Output:
+
 ```
 [69][420][69][420]
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -900,6 +1033,7 @@ Standard Output:
 ---
 
 #### 'drop' - Stack Operation <a name="kw-drop"></a>
+
 Deletes the item at the top of the stack, leaving no reference to it.
 This is useful to shut up warnings from the stack validator (aka follow best practices managing your memory).
 
@@ -910,22 +1044,27 @@ Most often seen used after [while](#kw-while) loops to delete the loop counter f
 ```
 
 Equivalent:
+
 - No equivalent
 
 Related:
+
 - No related
 
 Example:
+
 ```
 420 drop
 ```
 
 Stack Output:
+
 ```
 []
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -934,6 +1073,7 @@ Standard Output:
 ---
 
 #### 'swap' - Stack Operation <a name="kw-swap"></a>
+
 Moves the top-most item and the item below it to each other's positions.
 
 ```
@@ -941,22 +1081,27 @@ Moves the top-most item and the item below it to each other's positions.
 ```
 
 Equivalent:
+
 - No equivalent
 
 Related:
+
 - No related
 
 Example:
+
 ```
 80 500 swap
 ```
 
 Stack Output:
+
 ```
 [500][80]
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -965,6 +1110,7 @@ Standard Output:
 ---
 
 #### 'over' - Stack Operation <a name="kw-over"></a>
+
 Push the item below the top of the stack on to the top of the stack, duplicating it.
 
 ```
@@ -972,22 +1118,27 @@ Push the item below the top of the stack on to the top of the stack, duplicating
 ```
 
 Equivalent:
+
 - No equivalent
 
 Related:
+
 - No related
 
 Example:
+
 ```
 1 2 over
 ```
 
 Stack Output:
+
 ```
 [1][2][1]
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -996,6 +1147,7 @@ Standard Output:
 ---
 
 #### 'dump' - Tool <a name="kw-dump"></a><a name="kw-dump-c"></a><a name="kw-dump-s"></a>
+
 Print the item at the top of the stack to the standard output. \
 Internally, this uses the C RunTime `printf` method, so a format needs to be specified by using a specific keyword.
 
@@ -1005,18 +1157,20 @@ Internally, this uses the C RunTime `printf` method, so a format needs to be spe
 | `dump_c`      | character        |
 | `dump_s`      | string           |
 
-
 ```
 [a] -> []
 ```
 
 Equivalent:
+
 - Operator: [#](#op-dump)
 
 Related:
+
 - No related
 
 Example:
+
 ```
 // Print a number
 69420 dump
@@ -1053,11 +1207,13 @@ mem dump_s
 ```
 
 Stack Output:
+
 ```
 []
 ```
 
 Standard Output:
+
 ```
 69420
 
@@ -1071,11 +1227,13 @@ Reggie Watts
 ---
 
 #### 'mem' - Memory Address <a name="kw-mem"></a>
+
 Pushes the address of the memory allocated at run-time.
 
 For now, this is hard-coded in the Sparrow executable to 720kb. Although that should be enough for everyone,
 there will be a CCLI option in the future to specify the exact amount of bytes you would like to allocate.
 ###### Remember, it is up to you to not access invalid memory addresses.
+
 To access any address within the memory, simply add the byte offset to the address, like so `mem <byte offset> +`. \
 Next, use it with the memory access keywords that accept memory addresses as arguments (see related).
 
@@ -1084,23 +1242,28 @@ Next, use it with the memory access keywords that accept memory addresses as arg
 ```
 
 Equivalent:
+
 - No equivalent
 
 Related:
+
 - Keyword: [store](#kw-store)
 - Keyword: [load](#kw-load)
 
 Example:
+
 ```
 mem
 ```
 
 Stack Output:
+
 ```
 [addr]
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -1109,12 +1272,14 @@ Standard Output:
 ---
 
 #### 'store' - Memory Manipulation <a name="kw-store"></a>
+
 Store a value at an address in the memory allocated during run-time (see [mem](#kw-mem)). \
 This allows string-building, variables (albeit un-named ones), and as much as your mind can imagine.
 
 A size of value to store at an address must be selected with the following format: \
 `store<x>` \
 Where `x` is any of the following:
+
 - 'b' - byte        | 8  bits
 - 'w' - word        | 16 bits
 - 'd' - double word | 32 bits
@@ -1127,13 +1292,16 @@ Where `x` is any of the following:
 ```
 
 Equivalent:
+
 - No equivalent
 
 Related:
+
 - Keyword: [mem](#kw-mem)
 - Keyword: [load](#kw-load)
 
 Example:
+
 ```
 // Store a byte with value of 69 at mem[0]
 mem 69 storeb
@@ -1155,10 +1323,12 @@ mem 7 + 19696942042069696969 storeq
 ```
 
 Stack Output:
+
 ```
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -1167,11 +1337,13 @@ Standard Output:
 ---
 
 #### 'load' - Memory Manipulation <a name="kw-load"></a>
+
 Push a value on to the stack from a given address in the memory allocated during runtime (see related).
 
 A size of value to store at an address must be selected with the following format: \
 `load<x>` \
 Where `x` is any of the following:
+
 - 'b' - byte        | 8  bits
 - 'w' - word        | 16 bits
 - 'd' - double word | 32 bits
@@ -1184,13 +1356,16 @@ Where `x` is any of the following:
 ```
 
 Equivalent:
+
 - No equivalent
 
 Related:
+
 - Keyword: [mem](#kw-mem)
 - Keyword: [store](#kw-store)
 
 Example:
+
 ```
 // This is the `store` example from above with a few
 //  modifications made after the HERE comment.
@@ -1230,10 +1405,12 @@ mem 7 + loadq dump
 ```
 
 Stack Output:
+
 ```
 ```
 
 Standard Output:
+
 ```
 69
 69420
@@ -1246,11 +1423,13 @@ Standard Output:
 ---
 
 #### 'shl' - Bitwise Operator <a name="kw-shl"></a>
+
 Pushes the address of the memory allocated at run-time.
 
 For now, this is hard-coded in the Sparrow executable to 720kb. Although that should be enough for everyone,
 there will be a CCLI option in the future to specify the exact amount of bytes you would like to allocate.
 ###### Remember, it is up to you to not access invalid memory addresses.
+
 To access any address within the memory, simply add the byte offset to the address, like so `mem <byte offset> +`. \
 Next, use it with the memory access keywords that accept memory addresses as arguments (see related).
 
@@ -1259,12 +1438,15 @@ Next, use it with the memory access keywords that accept memory addresses as arg
 ```
 
 Equivalent:
+
 - Operator: [<<](#op-bit-shl)
 
 Related:
+
 - Keyword: [shr](#kw-shr)
 
 Example:
+
 ```
 // 1: 001
 //      /
@@ -1275,11 +1457,13 @@ Example:
 ```
 
 Stack Output:
+
 ```
 [4]
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -1288,6 +1472,7 @@ Standard Output:
 ---
 
 #### 'shr' - Bitwise Operator <a name="kw-shr"></a>
+
 Shifts the bits of `a` to the right by `b` amount of bits.
 
 ```
@@ -1295,12 +1480,15 @@ Shifts the bits of `a` to the right by `b` amount of bits.
 ```
 
 Equivalent:
+
 - Operator: [>>](#op-bit-shr)
 
 Related:
+
 - Keyword: [shl](#kw-shl)
 
 Example:
+
 ```
 // 32: 100000
 //     \
@@ -1311,11 +1499,13 @@ Example:
 ```
 
 Stack Output:
+
 ```
 [8]
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -1324,6 +1514,7 @@ Standard Output:
 ---
 
 #### 'and' - Bitwise Operator <a name="kw-and"></a>
+
 Perform a bitwise AND operation on two popped values, `a` and `b`.
 
 An AND operation entails the output only containing a `1` if both inputs do.
@@ -1333,12 +1524,15 @@ An AND operation entails the output only containing a `1` if both inputs do.
 ```
 
 Equivalent:
+
 - Operator: [&&](#op-bit-and)
 
 Related:
+
 - Keyword: [or](#kw-or)
 
 Example:
+
 ```
 // 7:  0111
 // 14: 1110
@@ -1347,11 +1541,13 @@ Example:
 ```
 
 Stack Output:
+
 ```
 [6]
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -1360,6 +1556,7 @@ Standard Output:
 ---
 
 #### 'or' - Bitwise Operator <a name="kw-or"></a>
+
 Perform a bitwise OR operation on two popped values, `a` and `b`.
 
 An OR operation entails the output containing a `1` if one or both of the inputs do.
@@ -1369,12 +1566,15 @@ An OR operation entails the output containing a `1` if one or both of the inputs
 ```
 
 Equivalent:
+
 - Operator: [||](#op-bit-or)
 
 Related:
+
 - Keyword: [and](#kw-and)
 
 Example:
+
 ```
 // 7:  0111
 // 14: 1110
@@ -1383,11 +1583,13 @@ Example:
 ```
 
 Stack Output:
+
 ```
 [15]
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -1396,6 +1598,7 @@ Standard Output:
 ---
 
 #### 'mod' - Operator <a name="kw-mod"></a>
+
 Pop two values off the stack, `a` and `b`, then push the result of `a` modulo `b`.
 
 A modulus operation entails dividing and then taking the remainder, aka what is left-over.
@@ -1405,22 +1608,27 @@ A modulus operation entails dividing and then taking the remainder, aka what is 
 ```
 
 Equivalent:
+
 - Operator: [%](#op-modulo)
 
 Related:
+
 - No related
 
 Example:
+
 ```
 20 15 mod
 ```
 
 Stack Output:
+
 ```
 [5]
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -1433,6 +1641,7 @@ Standard Output:
 The file operations are highly unstable, inperformant. Requires further testing and Fixing.
 
 #### 'open_file' - Operator <a name="kw-f-open"></a>
+
 Pop two values off the stack, `path` and `mode` then push a file pointer to an opened file. \
 Used with file operation keywords (see related).
 
@@ -1444,25 +1653,30 @@ File paths are NOT relative to the source code, or generated executable.
 ```
 
 Equivalent:
+
 - No equivalent
 
 Related:
+
 - Keyword: [write](#kw-write)
 - Keyword: [append](#kw-append)
 - Keyword: [write_to_file](#kw-f-write)
 - Keyword: [close_file](#kw-f-close)
 
 Example:
+
 ```
 "myFile.txt" write open_file
 ```
 
 Stack Output:
+
 ```
 [pointer to writeable file]
 ```
 
 Standard Output:
+
 ```
 ```
 
@@ -1471,6 +1685,7 @@ Standard Output:
 ---
 
 #### 'write_to_file' - Operator <a name="kw-f-write"></a>
+
 Pop four values off the stack, then use them as arguments to call `fwrite` from the C RunTime.
 
 Number of bytes per character is usually one unless you are doing some weird utf-16 stuff.
@@ -1483,13 +1698,16 @@ File paths are NOT relative to the source code, or generated executable.
 ```
 
 Equivalent:
+
 - No equivalent
 
 Related:
+
 - Keyword: [open_file](#kw-f-open)
 - Keyword: [close_file](#kw-f-close)
 
 Example:
+
 ```
 // Store file pointer in mem[0] thru mem[7]
 mem "myFile.txt" write open_file storeq
@@ -1520,15 +1738,18 @@ mem loadq close_file
 ```
 
 Stack Output:
+
 ```
 []
 ```
 
 Standard Output:
+
 ```
 ```
 
 `myFile.txt` Contents:
+
 ```
 I want to write this string to a text file
 
@@ -1537,6 +1758,7 @@ I want to write this string to a text file
 ---
 
 #### 'close_file' - Operator <a name="kw-f-close"></a>
+
 Pops a single value off the stack, `file ptr`, then closes the file opened at that pointer.
 
 Best practices indicate that every opened file must be closed before execution halts.
@@ -1549,12 +1771,15 @@ File paths are NOT relative to the source code, or generated executable.
 ```
 
 Equivalent:
+
 - No equivalent
 
 Related:
+
 - Keyword: [open_file](#kw-f-open)
 
 Example:
+
 ```
 "myFile.txt" write open_file
 
@@ -1562,15 +1787,18 @@ close_file
 ```
 
 Stack Output:
+
 ```
 []
 ```
 
 Standard Output:
+
 ```
 ```
 
 `myFile.txt` Contents:
+
 ```
 ```
 
@@ -1579,6 +1807,7 @@ Standard Output:
 ---
 
 #### 'length_s' - Operator <a name="kw-strlen"></a>
+
 Pop a string off the stack, then return the length of that string back on to the stack.
 
 ```
@@ -1586,22 +1815,27 @@ Pop a string off the stack, then return the length of that string back on to the
 ```
 
 Equivalent:
+
 - No equivalent
 
 Related:
+
 - Keyword: [write_to_file](#kw-f-write)
 
 Example:
+
 ```
 "Hello, World!" length_s dump
 ```
 
 Stack Output:
+
 ```
 []
 ```
 
 Standard Output:
+
 ```
 13
 ```
@@ -1611,6 +1845,7 @@ Standard Output:
 ---
 
 #### 'write' - Operator <a name="kw-write"></a>
+
 Pushes a file mode constant on to the stack.
 
 Used with `open_file` to indicate that the file should start empty, creating the file if it doesn't already exist. \
@@ -1621,28 +1856,34 @@ This means opening a file in this way over-writes any data previously stored the
 ```
 
 Equivalent:
+
 - No equivalent
 
 Related:
+
 - Keyword: [open_file](#kw-f-open)
 - Keyword: [append](#kw-append)
 
 Example:
+
 ```
 "myFile.txt" write open_file
 close_file
 ```
 
 Stack Output:
+
 ```
 []
 ```
 
 Standard Output:
+
 ```
 ```
 
 `myFile.txt` Contents:
+
 ```
 ```
 
@@ -1651,6 +1892,7 @@ Standard Output:
 ---
 
 #### 'append' - Operator <a name="kw-append"></a>
+
 Pushes a file mode constant on to the stack.
 
 Used with `open_file` to indicate that it should keep the contents of the file. \
@@ -1661,28 +1903,34 @@ Anything written to the file is put after the contents that were there already.
 ```
 
 Equivalent:
+
 - No equivalent
 
 Related:
+
 - Keyword: [open_file](#kw-f-open)
 - Keyword: [write](#kw-write)
 
 Example:
+
 ```
 "myFile.txt" append open_file
 close_file
 ```
 
 Stack Output:
+
 ```
 []
 ```
 
 Standard Output:
+
 ```
 ```
 
 `myFile.txt` Contents:
+
 ```
 ```
 
@@ -1693,16 +1941,17 @@ Standard Output:
 ---
 
 ## <a name="how-to-use-anchor"></a><a name="cross-platform-anchor"></a> How to build a Sparrow program
+
 So, you've written a program, what do you do now that you want to run it?
 
 Build it yourself using CMake after cloning the repository its really simple! (further instructions [down below](#how-to-build-sparrow)).
 
 There are two assembly syntaxes Sparrow supports (for now):
+
 - [GAS](#use-sparrow-GAS)
   - [Windows](#use-sparrow-GAS-windows)
 - [NASM](#use-sparrow-NASM)
   - [Windows](#use-sparrow-NASM-windows)
-
 
 ### GAS, or the [GNU assembler](https://en.wikipedia.org/wiki/GNU_Assembler) <a name="use-sparrow-GAS"></a>
 
@@ -1714,39 +1963,41 @@ It's a very easy to use installer, and comes with a whole host of very useful 64
 
 To familiarize yourself with the Sparrow Command Line Interface (CCLI), run the following command:
 
-```
+```shell
 Sparrow.exe -h` or `Sparrow.exe --help
 ```
 
 This will list all of the possible flags and options that may be passed to Sparrow.
 
 Example command to compile `test.spar` to an executable on Windows: \
+
 ```
 Sparrow.exe -GAS test.spar
 ```
 
 Example command with output renamed: \
+
 ```
 Sparrow.exe -GAS -add-ao "-o my-output-name" -o my-output-name test.spar
 ```
 
 ### NASM <a name="use-sparrow-NASM"></a>
+
 Just use the one that is packed with the Sparrow Repository.
 
 But if you want an updated version on Windows you can [download the installer from the official website](https://www.nasm.us/)
 
-
-#### You must ensure that you have some sort of linker on your machine that can link against the standard C runtime of whatever platform you're on.
+#### You must ensure that you have some sort of linker on your machine that can link against the standard C runtime of whatever platform you're on
 
 - [GoLink](http://godevtool.com/) is my recommendation on Windows. \
 GoLink is easy to use and fast to setup; simply extract it and it's ready.
-
 
 Once all the pre-requisites are installed, now comes time to use the CCLI, or Sparrow Command Line Interface. \
 To avoid headache as much as possible, Sparrow sets default values based on your operating system. \
 If you get any errors, there are a multitude of command line options to help rectify the situation. (see [Common Errors](#common-errors-anchor))
 
 ### Windows <a name="use-sparrow-NASM-windows"></a>
+
 Open a terminal and navigate to the directory containing `Sparrow.exe`. \
 To familiarize yourself with the options of the CCLI, run the following command: \
 `Sparrow.exe -h` or `Sparrow.exe --help` \
@@ -1765,6 +2016,7 @@ By default, the assembler and linker options are setup for Windows, using NASM a
 If your situation is different, make sure to specify the correct options using `-ao` and `-lo` respectively.
 
 ### <a name="common-errors-anchor"></a>Common Errors
+
 - "Assembler not found at x"
   - Solution: Specify a valid path, including file name and extension, to the assembler executable using `-a` or `--assembler-path`
 - "Linker not found at x"
@@ -1776,6 +2028,7 @@ If your situation is different, make sure to specify the correct options using `
 ---
 
 ## <a name="how-to-build-sparrow"></a>How to build Sparrow from source
+
 This project uses [CMake](https://cmake.org/) to build Sparrow for any platform that CMake supports (which is a lot). \
 This means Sparrow source code can be easily built in your favorite IDE that supports C++.
 
@@ -1794,10 +2047,13 @@ Open Visual Studio solution and build with `F6`
 
 ---
 ### Easy Test Up
+
 Easiest way to see how the Compiler Works is to use the Powershell file. This would basically run the two tests.
+
 ```
 test.ps1
 ```
+
 But, you can always create the build manually.
 
 [To Top](#top)
