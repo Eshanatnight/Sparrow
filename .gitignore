@@ -15,6 +15,4 @@ Sparrow.code-workspace
 
 # Executables
 Sparrow.exe
-
-# Test
-/test
+# there are executables in the bin folder
