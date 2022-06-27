@@ -1,6 +1,8 @@
 #include "Sparrow.h"
 #include "Logging.h"
 
+#include <fmt/core.h>
+
 Sparrow::MODE RUN_MODE = Sparrow::MODE::COMPILE;
 Sparrow::PLATFORM RUN_PLATFORM = Sparrow::PLATFORM::WIN;
 Sparrow::ASM_SYNTAX ASSEMBLY_SYNTAX = Sparrow::ASM_SYNTAX::NASM;
@@ -9,7 +11,7 @@ std::string SOURCE_PATH = "";
 std::string OUTPUT_NAME = "";
 std::string ASMB_PATH = "";
 std::string LINK_PATH = "";
-std::string ASMB_OPTS = "";
+std::string ASMB_OPTS = ""; 
 std::string LINK_OPTS = "";
 std::string ASMB_NAME = "";
 std::string LINK_NAME = "";
@@ -166,7 +168,7 @@ int main(int argc, char** argv)
                                        "or enable verbose logging (`-v` flag) to print output to the console.");
                         }
 
-                        printf("[CMD]: `%s`\n", cmd_link.c_str());
+                        fmt::print("[CMD]: `{}`\n", cmd_link);
                         if (system(cmd_link.c_str()) == 0)
                         {
                             Sparrow::Log("Linker successful!");
@@ -200,7 +202,6 @@ int main(int argc, char** argv)
                 }
             }
         }
-
     }
 
     return 0;
