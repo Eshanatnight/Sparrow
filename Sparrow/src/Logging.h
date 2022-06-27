@@ -11,30 +11,30 @@ namespace Sparrow
     const static std::string STACK_VIOLATION_ERROR_MESSAGE = "Stack Protection Invoked.";
 
     // Dolog and Oveloads
-    void DoLog(std::string msg, std::string prefix = "[LOG]", std::string = "\n");
-    void DoLog(std::string msg, size_t line_num, std::string prefix = "[LOG]", std::string suffix = "\n");
-    void DoLog(std::string msg, size_t line_num, size_t column_num, std::string prefix = "[LOG]", std::string suffix = "\n");
+    void DoLog(const std::string& msg, std::string prefix = "[LOG]", std::string = "\n");
+    void DoLog(const std::string& msg, size_t line_num, std::string prefix = "[LOG]", std::string suffix = "\n");
+    void DoLog(const std::string& msg, size_t line_num, size_t column_num, std::string prefix = "[LOG]", std::string suffix = "\n");
 
     // Error and Overloads
-    void Error(std::string msg);
-    void Error(std::string msg, std::size_t line_num);
-    void Error(std::string msg, std::size_t line_num, std::size_t column_num);
-    void Error(std::string msg, std::exception e);
+    void Error(const std::string& msg);
+    void Error(const std::string& msg, std::size_t line_num);
+    void Error(const std::string& msg, std::size_t line_num, std::size_t column_num);
+    void Error(const std::string& msg, std::exception e);
 
     // Warning and Overloads
-    void Warning(std::string msg);
-    void Warning(std::string msg, std::size_t line_num);
-    void Warning(std::string msg, std::size_t line_num, std::size_t column_num);
+    void Warning(const std::string& msg);
+    void Warning(const std::string& msg, std::size_t line_num);
+    void Warning(const std::string& msg, std::size_t line_num, std::size_t column_num);
 
     // Debug Log and Overloads DbgLog
-    void DbgLog(std::string msg);
-    void DbgLog(std::string msg, std::size_t line_num);
-    void DbgLog(std::string msg, std::size_t line_num, std::size_t column_num);
+    void DbgLog(const std::string& msg);
+    void DbgLog(const std::string& msg, std::size_t line_num);
+    void DbgLog(const std::string& msg, std::size_t line_num, std::size_t column_num);
 
     // Logging Functions
-    void Log(std::string msg);
-    void Log(std::string msg, std::size_t line_num);
-    void Log(std::string msg, std::size_t line_num, std::size_t column_num);
+    void Log(const std::string& msg);
+    void Log(const std::string& msg, std::size_t line_num);
+    void Log(const std::string& msg, std::size_t line_num, std::size_t column_num);
 
     // Error Specializations
     void StackError();
