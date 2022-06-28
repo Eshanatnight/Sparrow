@@ -2,17 +2,14 @@
 /.idea
 /.vs
 /.vscode
-Sparrow.code-workspace
 
 # Build Files and Folders
 /out
 /bin
-/Build
 /build
-/cmake-build-debug
-/cmake-build-release
-/cmake-build-debug-visual-studio
 
 # Executables
 Sparrow.exe
-# there are executables in the bin folder
+
+#tests
+/test
