@@ -1,5 +1,8 @@
+# Create a test folder
+mkdir test;
+
 # Build Sparrow
-..\.scripts\build_sparrow.ps1;
+..\.scripts\build-sparrow-with-cmake.ps1;
 
 # Creates the Folders for the Tests, so it's neater and more organized for me
 ..\.scripts\test_paths.ps1;
