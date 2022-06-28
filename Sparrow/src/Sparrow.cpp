@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <stdlib.h>
 #include <fmt/core.h>
+#include <fmt/color.h>
 
 
 bool Sparrow::isOperator(char& c)
@@ -172,26 +173,25 @@ Sparrow::Token::Token()
 
 void Sparrow::printUsage()
 {
-    fmt::print("\n%s\n", "Usage: `Sparrow.exe <flags> <options> Path/To/File.spar`");
-    fmt::print("    %s\n", "Flags:");
-    fmt::print("        %s\n", "-win, -win64             | (default) Generate assembly for Windows 64-bit. If no platform is specified, this is the default.");
-    fmt::print("        %s\n", "-com, --compile          | (default) Compile program from source into executable");
-    fmt::print("        %s\n", "-gen, --generate         | Generate assembly, but don't create an executable from it.");
-    fmt::print("        %s\n", "-NASM                    | (default) When generating assembly, use NASM syntax. Any OPTIONS set before NASM may or may be over-ridden; best practice is to put it first.");
-    fmt::print("        %s\n", "-GAS                     | When generating assembly, use GAS syntax. This is able to be assembled by gcc into an executable. (pass output file name to gcc with `-add-ao \"-o <output-file-name>\" and not the built-in `-o` option`). Any OPTIONS set before GAS may or may be over-ridden; best practice is to put it first.");
-    fmt::print("        %s\n", "-v, --verbose            | Enable verbose logging within Sparrow");
-    fmt::print("    %s\n", "Options (latest over-rides):");
-    fmt::print("        %s\n", "Usage: <option> <input>");
-    fmt::print("        %s\n", "If the <input> contains spaces, be sure to surround it by double quotes");
-    fmt::print("        %s\n", "-o, --output-name        | Specify name of generated files.");
-    fmt::print("        %s\n", "-a, --assembler-path     | Specify path to assembler (include extension)");
-    fmt::print("        %s\n", "-l, --linker-path        | Specify path to linker (include extension)");
-    fmt::print("        %s\n", "-ao, --assembler-options | Command line arguments called with assembler");
-    fmt::print("        %s\n", "-lo, --linker-options    | Command line arguments called with linker");
-    fmt::print("        %s\n", "-add-ao, --add-asm-opt   | Append a command line argument to assembler options");
-    fmt::print("        %s\n", "-add-lo, --add-link-opt  | Append a command line argument to linker options");
+    fmt::print(fg(fmt::color::hot_pink), "Usage: `Sparrow.exe <flags> <options> Path/To/File.spar`\n");
+    fmt::print("Flags:\n");
+    fmt::print("    -win, -win64             | (default) Generate assembly for Windows 64-bit. If no platform is specified, this is the default.\n");
+    fmt::print("    -com, --compile          | (default) Compile program from source into executable");
+    fmt::print("    -gen, --generate         | Generate assembly, but don't create an executable from it.");
+    fmt::print("    -NASM                    | (default) When generating assembly, use NASM syntax. Any OPTIONS set before NASM may or may be over-ridden; best practice is to put it first.\n");
+    fmt::print("    -GAS                     | When generating assembly, use GAS syntax. This is able to be assembled by gcc into an executable. (pass output file name to gcc with `-add-ao \"-o <output-file-name>\" and not the built-in `-o` option`). Any OPTIONS set before GAS may or may be over-ridden; best practice is to put it first.\n");
+    fmt::print("    -v, --verbose            | Enable verbose logging within Sparrow\n");
+    fmt::print("Options (latest over-rides):\n");
+    fmt::print("Usage: <option> <input>\n");
+    fmt::print("    If the <input> contains spaces, be sure to surround it by double quotes\n");
+    fmt::print("    -o, --output-name        | Specify name of generated files.\n");
+    fmt::print("    -a, --assembler-path     | Specify path to assembler (include extension)\n");
+    fmt::print("    -l, --linker-path        | Specify path to linker (include extension)\n");
+    fmt::print("    -ao, --assembler-options | Command line arguments called with assembler\n");
+    fmt::print("    -lo, --linker-options    | Command line arguments called with linker\n");
+    fmt::print("    -add-ao, --add-asm-opt   | Append a command line argument to assembler options\n");
+    fmt::print("    -add-lo, --add-link-opt  | Append a command line argument to linker options\n");
 }
-
 std::vector<std::string> Sparrow::stringToHex(const std::string& input)
 {
     static const char hex_digits[] = "0123456789abcdef";
@@ -1717,7 +1717,7 @@ void Sparrow::PrintToken(Token& t)
 
 void Sparrow::PrintTokens(Program& p)
 {
-    printf("%s\n", "TOKENS:");
+    printf( "TOKENS:\n");
     size_t instr_ptr_max = p.tokens.size();
 
     for (size_t instr_ptr = 0; instr_ptr < instr_ptr_max; instr_ptr++)
